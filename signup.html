@@ -34,10 +34,57 @@
             background-color: #6c757d; /* Gray background for back button */
         }
     </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore.js"></script>
+    <!-- Firebase SDK (Latest Version) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-auth.js";
+        import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Sign Up Function
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('signupBtn').onclick = function() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        
+                        // Save additional user data to Firestore
+                        return setDoc(doc(db, 'users', user.uid), {
+                            email: email,
+                            createdAt: new Date()
+                        });
+                    })
+                    .then(() => {
+                        document.getElementById('status').textContent = 'Account created successfully!';
+                        // Redirect to the login page after successful sign-up
+                        setTimeout(() => {
+                            window.location.href = 'login.html'; // Redirect to the login page
+                        }, 2000); // Wait 2 seconds before redirecting
+                    })
+                    .catch((error) => {
+                        document.getElementById('status').textContent = `Error: ${error.message}`;
+                    });
+            };
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -52,51 +99,5 @@
         <button class="button" id="signupBtn">Sign Up</button>
         <p id="status"></p>
     </div>
-
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            measurementId: "YOUR_MEASUREMENT_ID"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Sign Up Function
-        document.getElementById('signupBtn').onclick = function() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    
-                    // Save additional user data to Firestore
-                    return db.collection('users').doc(user.uid).set({
-                        email: email,
-                        createdAt: new Date()
-                    });
-                })
-                .then(() => {
-                    document.getElementById('status').textContent = 'Account created successfully!';
-                    // Redirect to the login page after successful sign-up
-                    setTimeout(() => {
-                        window.location.href = 'login.html'; // Redirect to the login page
-                    }, 2000); // Wait 2 seconds before redirecting
-                })
-                .catch((error) => {
-                    document.getElementById('status').textContent = `Error: ${error.message}`;
-                });
-        };
-    </script>
 </body>
 </html>
-
