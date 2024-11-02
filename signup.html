@@ -49,20 +49,20 @@
         <div class="form-group">
             <input type="password" id="password" placeholder="Password" required>
         </div>
-        <button class="button" onclick="signUp()">Sign Up</button>
+        <button class="button" id="signupBtn">Sign Up</button>
         <p id="status"></p>
     </div>
 
     <script>
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyBWg0QZs2VkyOa0jePyrAlO9Wk4GOO5sxI",
-            authDomain: "skib-c31e0.firebaseapp.com",
-            projectId: "skib-c31e0",
-            storageBucket: "skib-c31e0.firebasestorage.app",
-            messagingSenderId: "376707443877",
-            appId: "1:376707443877:web:21e150e4dbf943c12b714c",
-            measurementId: "G-EYFN6EN4X0"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
         };
 
         // Initialize Firebase
@@ -71,22 +71,14 @@
         const db = firebase.firestore();
 
         // Sign Up Function
-        function signUp() {
-            console.log('Sign Up function called'); // Debugging line
+        document.getElementById('signupBtn').onclick = function() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Basic validation
-            if (!email || !password) {
-                document.getElementById('status').textContent = 'Please enter both email and password.';
-                return; // Exit if fields are empty
-            }
-
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    console.log('User created:', userCredential); // Debugging line
                     const user = userCredential.user;
-
+                    
                     // Save additional user data to Firestore
                     return db.collection('users').doc(user.uid).set({
                         email: email,
@@ -95,12 +87,15 @@
                 })
                 .then(() => {
                     document.getElementById('status').textContent = 'Account created successfully!';
+                    // Redirect to the login page after successful sign-up
+                    setTimeout(() => {
+                        window.location.href = 'login.html'; // Redirect to the login page
+                    }, 2000); // Wait 2 seconds before redirecting
                 })
                 .catch((error) => {
-                    console.error('Error during sign up:', error); // Debugging line
                     document.getElementById('status').textContent = `Error: ${error.message}`;
                 });
-        }
+        };
     </script>
 </body>
 </html>
