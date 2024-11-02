@@ -34,8 +34,9 @@
             background-color: #6c757d; /* Gray background for back button */
         }
     </style>
-    <!-- Firebase SDK (Latest Version) -->
+    <!-- Firebase SDK -->
     <script type="module">
+        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-auth.js";
         import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore.js";
@@ -57,31 +58,29 @@
         const db = getFirestore(app);
 
         // Sign Up Function
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('signupBtn').onclick = function() {
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('signupBtn').onclick = async () => {
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
 
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
-                        const user = userCredential.user;
-                        
-                        // Save additional user data to Firestore
-                        return setDoc(doc(db, 'users', user.uid), {
-                            email: email,
-                            createdAt: new Date()
-                        });
-                    })
-                    .then(() => {
-                        document.getElementById('status').textContent = 'Account created successfully!';
-                        // Redirect to the login page after successful sign-up
-                        setTimeout(() => {
-                            window.location.href = 'login.html'; // Redirect to the login page
-                        }, 2000); // Wait 2 seconds before redirecting
-                    })
-                    .catch((error) => {
-                        document.getElementById('status').textContent = `Error: ${error.message}`;
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // Save additional user data to Firestore
+                    await setDoc(doc(db, 'users', user.uid), {
+                        email: email,
+                        createdAt: new Date()
                     });
+
+                    document.getElementById('status').textContent = 'Account created successfully!';
+                    // Redirect to the login page after successful sign-up
+                    setTimeout(() => {
+                        window.location.href = 'login.html'; // Redirect to the login page
+                    }, 2000); // Wait 2 seconds before redirecting
+                } catch (error) {
+                    document.getElementById('status').textContent = `Error: ${error.message}`;
+                }
             };
         });
     </script>
