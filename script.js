@@ -13,11 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.getElementById('password-input').value;
         const captchaAnswer = parseInt(captchaAnswerElement.value, 10);
 
+        // Validate both password and CAPTCHA
         if (password !== correctPassword) {
             showError('Incorrect password.');
         } else if (captchaAnswer !== num1 + num2) {
             showError('CAPTCHA is incorrect.');
         } else {
+            errorMessage.style.display = 'none';
             document.getElementById('password-screen').style.display = 'none';
             const loadingScreen = document.getElementById('loading-screen');
             loadingScreen.style.display = 'flex';
