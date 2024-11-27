@@ -13,11 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (validPasswords.includes(enteredPassword)) {
       errorMessage.style.display = "none";
       passwordContainer.style.display = "none";
-      loadingScreen.style.display = "block";
+      loadingScreen.style.display = "flex"; // Show loading screen
 
       setTimeout(() => {
-        loadingScreen.style.display = "none";
-        mainContent.style.display = "block";
+        loadingScreen.style.display = "none"; // Hide loading screen
+        mainContent.style.display = "flex";  // Show main content
       }, 3000);
     } else {
       errorMessage.style.display = "block";
