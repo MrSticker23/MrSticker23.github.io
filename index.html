@@ -167,64 +167,48 @@
             const handValue = calculateHandValue(playerHand);
             const handStrength = evaluateHandStrength(playerHand);
             let suggestion = handValue > 21 ? 'Busted!' : (handValue >= 17 ? 'Stand' : 'Hit');
+            const luckFactor = calculateLuck(handStrength, bet);
 
-            // Simplified bet multiplier based on hand value (could be more complex)
-            const multiplier = handValue >= 17 ? 1.5 : 2.0;
-            const adjustedBet = (bet * multiplier).toFixed(2);
-
-            document.getElementById('result-bj').innerHTML = `
-                Hand: ${handStrength.name}<br>
-                Suggestion: <strong>${suggestion}</strong><br>
-                Suggested Bet Amount: <strong>$${adjustedBet}</strong>
+            const resultText = `
+                Hand: ${playerHand.join(', ')}<br>
+                Hand Value: ${handValue}<br>
+                Suggestion: ${suggestion}<br>
+                Luck Factor: ${luckFactor}<br>
+                Hand Strength: ${handStrength}
             `;
+            document.getElementById('result-bj').innerHTML = resultText;
         }
 
-        // Dummy function to evaluate hand strength (this can be expanded later)
-        function evaluateHandStrength(hand) {
-            const handRanks = hand.map(card => card.split(' ')[0]);
-            let pairs = handRanks.filter((val, index, self) => self.indexOf(val) !== index).length;
-            return { rank: pairs, name: pairs ? 'Pair' : 'High Card' };
-        }
-
-        // Calculate hand value for Blackjack (simplified)
+        // Calculate hand value
         function calculateHandValue(hand) {
-            let value = 0;
+            let total = 0;
             let aceCount = 0;
+            const cardValues = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11 };
+
             hand.forEach(card => {
-                if (card === 'A') { value += 11; aceCount++; }
-                else if (['K', 'Q', 'J'].includes(card)) value += 10;
-                else value += parseInt(card);
+                const cardRank = card.replace(/[^\w\s]/gi, '');  // Remove suit characters (e.g., ♠, ♥)
+                total += cardValues[cardRank];
+                if (cardRank === 'A') aceCount++;
             });
-            while (value > 21 && aceCount > 0) { value -= 10; aceCount--; }
-            return value;
+
+            while (total > 21 && aceCount > 0) {
+                total -= 10;
+                aceCount--;
+            }
+            return total;
         }
 
-        // Texas Hold'em Calculator (simple version for now)
-        function calculateTexasHoldem() {
-            const playerHand = [
-                document.getElementById('card-1-th').value,
-                document.getElementById('card-2-th').value
-            ].filter(card => card !== "");
-            const communityCards = [
-                document.getElementById('community-card-1').value,
-                document.getElementById('community-card-2').value,
-                document.getElementById('community-card-3').value,
-                document.getElementById('community-card-4').value,
-                document.getElementById('community-card-5').value
-            ].filter(card => card !== "");
-
-            let handStrength = evaluateTexasHand(playerHand, communityCards);
-            let suggestion = "Not Yet Calculated"; // Placeholder for more logic
-
-            document.getElementById('result-th').innerHTML = `
-                Hand: ${handStrength}<br>
-                Suggestion: <strong>${suggestion}</strong>
-            `;
+        // Evaluate hand strength (basic version)
+        function evaluateHandStrength(hand) {
+            if (hand.includes('A') && hand.length === 2) return 'Blackjack';
+            return hand.length === 2 ? 'Pair' : 'Bustable';
         }
 
-        // Simple Texas Hold'em Hand Evaluator (for now)
-        function evaluateTexasHand(playerHand, communityCards) {
-            return `Pair of ${playerHand[0]}`; // Placeholder logic
+        // Luck factor based on hand strength and current bet
+        function calculateLuck(handStrength, bet) {
+            if (handStrength === 'Blackjack') return bet * 2;
+            if (handStrength === 'Bustable') return bet * 0.5;
+            return bet * 1.5;  // General odds
         }
     </script>
 </body>
