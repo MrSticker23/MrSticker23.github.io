@@ -36,18 +36,27 @@
         function calculateOddsAndBet() {
             const playerHand = document.getElementById('player-hand').value.split(',').map(card => card.trim());
             const bet = parseFloat(document.getElementById('current-bet').value);
-            let suggestion = "Stand"; // Default suggestion
-            let betMultiplier = 1; // Default multiplier
 
-            // Simple logic: If hand contains Ace or is low (< 16), suggest Hit
             const totalValue = calculateHandValue(playerHand);
+            let suggestion = "Stand";
+            let multiplier = 1; // Default multiplier for betting
 
+            // Dynamic odds and suggestion based on hand value
             if (totalValue < 17) {
                 suggestion = "Hit";
-                betMultiplier = 1.5; // Increase bet if you should hit
+                multiplier = 1.2; // Lower odds if hand is weak
+            } else if (totalValue >= 17 && totalValue < 20) {
+                suggestion = "Stand";
+                multiplier = 1.5;
+            } else if (totalValue === 20) {
+                suggestion = "Stand";
+                multiplier = 1.8;
+            } else if (totalValue === 21) {
+                suggestion = "Stand";
+                multiplier = 2.0; // Strong hand, higher bet multiplier
             }
 
-            const adjustedBet = (bet * betMultiplier).toFixed(2);
+            const adjustedBet = (bet * multiplier).toFixed(2);
             document.getElementById('result').innerHTML = `
                 Suggestion: <strong>${suggestion}</strong><br>
                 Suggested Bet Amount: <strong>$${adjustedBet}</strong>
