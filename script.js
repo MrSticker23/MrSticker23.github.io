@@ -4,11 +4,18 @@ document.getElementById('submit-button').addEventListener('click', function() {
 
     if (password === correctPassword) {
         document.getElementById('password-screen').style.display = 'none';
-        document.getElementById('loading-screen').style.display = 'flex';
+        
+        // Show the loading screen with a slight delay to ensure rendering
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.style.display = 'flex';
+        setTimeout(() => {
+            loadingScreen.classList.add('show');
+        }, 10); // Delay to trigger CSS animations
 
         // Simulate loading delay
         setTimeout(() => {
-            document.getElementById('loading-screen').style.display = 'none';
+            loadingScreen.classList.remove('show');
+            loadingScreen.style.display = 'none';
             const mainPage = document.getElementById('main-page');
             mainPage.style.display = 'block';
             setTimeout(() => {
@@ -19,6 +26,7 @@ document.getElementById('submit-button').addEventListener('click', function() {
         alert('Incorrect password');
     }
 });
+
 
 // Tab navigation
 document.querySelectorAll('.tab-button').forEach(button => {
