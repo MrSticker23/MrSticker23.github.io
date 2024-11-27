@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Card Game Calculators</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; transition: opacity 1s ease-in-out; }
-        .tab { display: inline-block; margin: 0 10px; padding: 10px 20px; cursor: pointer; background-color: #ddd; border-radius: 5px; }
-        .tab.active { background-color: #bbb; }
-        .content { display: none; margin-top: 20px; }
-        .content.active { display: block; }
-        input, button { margin: 5px; padding: 10px; }
-        #result, #log-display { margin-top: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f4f4f4; transition: opacity 1s ease-in-out; }
+
+        /* Loading Screen */
         #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #222; color: #fff; display: flex;
+            background-color: rgba(0, 0, 0, 0.7); color: #fff; display: flex;
             justify-content: center; align-items: center; font-size: 24px; z-index: 9999;
             opacity: 1; transition: opacity 1s ease-in-out;
         }
@@ -30,7 +27,21 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .advanced { display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+
+        /* Main Content Layout */
+        .container { max-width: 900px; width: 100%; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; margin-bottom: 20px; font-size: 2rem; }
+        .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; cursor: pointer; background-color: #ddd; border-radius: 5px; margin: 0 5px; font-weight: bold; }
+        .tab.active { background-color: #333; color: #fff; }
+        .content { display: none; }
+        .content.active { display: block; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; font-size: 1rem; }
+        button { background-color: #4CAF50; color: white; cursor: pointer; border: none; }
+        button:hover { background-color: #45a049; }
+        .advanced { display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
+        .advanced input { width: auto; }
+        .result { margin-top: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -40,56 +51,58 @@
         <div>Entering the Stacked Deck Society...</div>
     </div>
 
-    <h1>Card Game Calculators</h1>
-
-    <div>
-        <div class="tab active" onclick="switchTab('blackjack')">Blackjack</div>
-        <div class="tab" onclick="switchTab('texas-holdem')">Texas Hold'em</div>
-    </div>
-
-    <!-- Blackjack Content -->
-    <div id="blackjack" class="content active">
-        <h2>Blackjack Bet Calculator</h2>
-        <input id="player-hand-bj" type="text" placeholder="Enter your cards (e.g., 10, A)">
-        <input id="current-bet-bj" type="number" placeholder="Enter your current bet">
-        <button onclick="calculateBlackjack()">Calculate</button>
-        <button onclick="toggleAdvanced('blackjack-advanced')">Advanced Mode</button>
-
-        <div id="blackjack-advanced" class="advanced">
-            <div>
-                <input type="text" placeholder="Rank (e.g., 10)">
-                <input type="text" placeholder="Suit (e.g., Spades)">
-            </div>
-            <div>
-                <input type="text" placeholder="Rank">
-                <input type="text" placeholder="Suit">
-            </div>
+    <!-- Main Content Container -->
+    <div class="container">
+        <h1>Card Game Calculators</h1>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('blackjack')">Blackjack</div>
+            <div class="tab" onclick="switchTab('texas-holdem')">Texas Hold'em</div>
         </div>
 
-        <div id="result-bj"></div>
-    </div>
+        <!-- Blackjack Content -->
+        <div id="blackjack" class="content active">
+            <h2>Blackjack Bet Calculator</h2>
+            <input id="player-hand-bj" type="text" placeholder="Enter your cards (e.g., 10, A)">
+            <input id="current-bet-bj" type="number" placeholder="Enter your current bet">
+            <button onclick="calculateBlackjack()">Calculate</button>
+            <button onclick="toggleAdvanced('blackjack-advanced')">Advanced Mode</button>
 
-    <!-- Texas Hold'em Content -->
-    <div id="texas-holdem" class="content">
-        <h2>Texas Hold'em Calculator</h2>
-        <input id="player-hand-th" type="text" placeholder="Enter your hand (e.g., A♥, K♠)">
-        <input id="community-cards" type="text" placeholder="Enter community cards (e.g., 10♦, J♥, Q♣)">
-        <input id="current-bet-th" type="number" placeholder="Enter your current bet">
-        <button onclick="calculateTexasHoldem()">Calculate</button>
-        <button onclick="toggleAdvanced('texas-advanced')">Advanced Mode</button>
+            <div id="blackjack-advanced" class="advanced">
+                <div>
+                    <input type="text" placeholder="Rank (e.g., 10)">
+                    <input type="text" placeholder="Suit (e.g., Spades)">
+                </div>
+                <div>
+                    <input type="text" placeholder="Rank">
+                    <input type="text" placeholder="Suit">
+                </div>
+            </div>
 
-        <div id="texas-advanced" class="advanced">
-            <div>
-                <input type="text" placeholder="Rank">
-                <input type="text" placeholder="Suit">
-            </div>
-            <div>
-                <input type="text" placeholder="Rank">
-                <input type="text" placeholder="Suit">
-            </div>
+            <div id="result-bj" class="result"></div>
         </div>
 
-        <div id="result-th"></div>
+        <!-- Texas Hold'em Content -->
+        <div id="texas-holdem" class="content">
+            <h2>Texas Hold'em Calculator</h2>
+            <input id="player-hand-th" type="text" placeholder="Enter your hand (e.g., A♥, K♠)">
+            <input id="community-cards" type="text" placeholder="Enter community cards (e.g., 10♦, J♥, Q♣)">
+            <input id="current-bet-th" type="number" placeholder="Enter your current bet">
+            <button onclick="calculateTexasHoldem()">Calculate</button>
+            <button onclick="toggleAdvanced('texas-advanced')">Advanced Mode</button>
+
+            <div id="texas-advanced" class="advanced">
+                <div>
+                    <input type="text" placeholder="Rank">
+                    <input type="text" placeholder="Suit">
+                </div>
+                <div>
+                    <input type="text" placeholder="Rank">
+                    <input type="text" placeholder="Suit">
+                </div>
+            </div>
+
+            <div id="result-th" class="result"></div>
+        </div>
     </div>
 
     <script>
@@ -150,29 +163,26 @@
             const adjustedBet = (bet * multiplier).toFixed(2);
 
             document.getElementById('result-th').innerHTML = `
-                Hand: <strong>${handStrength.name}</strong><br>
+                Hand: ${handStrength.name}<br>
                 Suggestion: <strong>${suggestion}</strong><br>
                 Suggested Bet Amount: <strong>$${adjustedBet}</strong>
             `;
         }
 
-        // Hand evaluation logic (simplified)
-        function evaluateHandStrength(cards) {
-            const ranks = cards.map(card => card.slice(0, -1));
-            const rankCount = {};
-            ranks.forEach(rank => rankCount[rank] = (rankCount[rank] || 0) + 1);
-
-            if (Object.values(rankCount).includes(4)) return { name: "Four of a Kind", rank: 7 };
-            if (Object.values(rankCount).includes(3)) return { name: "Three of a Kind", rank: 3 };
-            if (Object.values(rankCount).includes(2)) return { name: "Pair", rank: 2 };
-            return { name: "High Card", rank: 1 };
+        // Dummy function to evaluate hand strength (this can be expanded later)
+        function evaluateHandStrength(hand) {
+            // For simplicity, just counting pairs, etc.
+            const handRanks = hand.map(card => card.split(' ')[0]);
+            let pairs = handRanks.filter((val, index, self) => self.indexOf(val) !== index).length;
+            return { rank: pairs, name: pairs ? 'Pair' : 'High Card' };
         }
 
-        // Blackjack hand value calculation
+        // Calculate hand value for Blackjack (simplified)
         function calculateHandValue(hand) {
-            let value = 0, aceCount = 0;
+            let value = 0;
+            let aceCount = 0;
             hand.forEach(card => {
-                if (card === 'A') { aceCount++; value += 11; }
+                if (card === 'A') { value += 11; aceCount++; }
                 else if (['K', 'Q', 'J'].includes(card)) value += 10;
                 else value += parseInt(card);
             });
