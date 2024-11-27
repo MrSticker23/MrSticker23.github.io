@@ -1,27 +1,21 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const validPasswords = ["password1", "password2", "password3"]; // Add your passwords here
-  const passwordInput = document.getElementById("password-input");
-  const submitButton = document.getElementById("submit-button");
-  const errorMessage = document.getElementById("error-message");
-  const loadingScreen = document.getElementById("loading-screen");
-  const mainContent = document.getElementById("main-content");
-  const passwordContainer = document.getElementById("password-container");
+document.getElementById('submit-button').addEventListener('click', function() {
+    const password = document.getElementById('password-input').value;
+    const correctPassword = 'mypassword'; // Set your correct password here
 
-  submitButton.addEventListener("click", () => {
-    const enteredPassword = passwordInput.value.trim();
+    if (password === correctPassword) {
+        document.getElementById('password-screen').style.display = 'none';
+        document.getElementById('loading-screen').style.display = 'flex';
 
-    if (validPasswords.includes(enteredPassword)) {
-      errorMessage.style.display = "none";
-      passwordContainer.style.display = "none";
-      loadingScreen.style.display = "flex"; // Show loading screen
-
-      setTimeout(() => {
-        loadingScreen.style.display = "none"; // Hide loading screen
-        mainContent.style.display = "flex";  // Show main content
-      }, 3000);
+        // Simulate loading delay
+        setTimeout(() => {
+            document.getElementById('loading-screen').style.display = 'none';
+            const mainPage = document.getElementById('main-page');
+            mainPage.style.display = 'block';
+            setTimeout(() => {
+                mainPage.style.opacity = '1';
+            }, 10);
+        }, 2000); // 2-second loading delay
     } else {
-      errorMessage.style.display = "block";
-      passwordInput.value = "";
+        alert('Incorrect password');
     }
-  });
 });
