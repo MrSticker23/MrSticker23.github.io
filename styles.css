@@ -130,3 +130,16 @@ body {
 .tab-content.active {
     display: block;
 }
+
+
+/* Additional styles for links in Events */
+#events a {
+    color: #00ff00;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+#events a:hover {
+    text-decoration: underline;
+}
+
