@@ -47,7 +47,8 @@
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
-            document.querySelector(`.tab:contains('${tabName}')`).classList.add('active');
+
+            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
             document.getElementById(tabName).classList.add('active');
         }
 
@@ -81,7 +82,7 @@
             // Calculate hand strength and suggestion
             const combinedHand = playerHand.concat(communityCards);
             const handStrength = evaluateHandStrength(combinedHand);
-            const suggestion = handStrength.rank >= 2 ? "Bet" : "Check/Fold"; // Adjust based on strength
+            const suggestion = handStrength.rank >= 2 ? "Bet" : "Check/Fold"; 
             const multiplier = handStrength.rank / 2 + 1;
             const adjustedBet = (bet * multiplier).toFixed(2);
 
@@ -94,7 +95,6 @@
 
         // Hand strength evaluation (simplified)
         function evaluateHandStrength(cards) {
-            // Basic example: check for a pair
             const ranks = cards.map(card => card.slice(0, -1));
             const rankCount = {};
             ranks.forEach(rank => rankCount[rank] = (rankCount[rank] || 0) + 1);
@@ -105,7 +105,7 @@
             return { name: "High Card", rank: 1 };
         }
 
-        // Blackjack hand value calculation (same as before)
+        // Blackjack hand value calculation
         function calculateHandValue(hand) {
             let value = 0, aceCount = 0;
             hand.forEach(card => {
