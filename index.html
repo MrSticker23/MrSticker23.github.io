@@ -21,8 +21,33 @@
 
     <!-- Main Page -->
     <div id="main-page">
-        <h1>Welcome to the Main Page!</h1>
-        <p>This is the content of the main page.</p>
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="announcements">Announcements</button>
+            <button class="tab-button" data-tab="news">News</button>
+            <button class="tab-button" data-tab="events">Events</button>
+            <button class="tab-button" data-tab="contact">Contact</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tab-content">
+            <div id="announcements" class="tab-content active">
+                <h1>Announcements</h1>
+                <p>Welcome to the announcements section. This is the default view.</p>
+            </div>
+            <div id="news" class="tab-content">
+                <h1>News</h1>
+                <p>Here is the latest news.</p>
+            </div>
+            <div id="events" class="tab-content">
+                <h1>Events</h1>
+                <p>Upcoming events will be listed here.</p>
+            </div>
+            <div id="contact" class="tab-content">
+                <h1>Contact</h1>
+                <p>Contact information and form.</p>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
