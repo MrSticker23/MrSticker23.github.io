@@ -5,8 +5,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #000; /* Black background */
-    color: #00ff00; /* Neon green text */
+    background-color: #000;
+    color: #00ff00;
 }
 
 /* Password Screen */
@@ -16,7 +16,6 @@ body {
     padding: 40px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 255, 0, 0.3);
-    color: #00ff00;
 }
 
 #password-screen h2 {
@@ -24,7 +23,8 @@ body {
     font-size: 24px;
 }
 
-#password-input {
+#password-input,
+#captcha-answer {
     padding: 12px;
     width: 100%;
     max-width: 300px;
@@ -34,7 +34,6 @@ body {
     background-color: #000;
     color: #00ff00;
     margin-bottom: 20px;
-    box-sizing: border-box;
 }
 
 #submit-button {
@@ -50,6 +49,12 @@ body {
 
 #submit-button:hover {
     background-color: #00cc00;
+}
+
+#error-message {
+    color: red;
+    margin-top: 10px;
+    display: none;
 }
 
 /* Loading Screen */
@@ -81,6 +86,11 @@ body {
     animation: spin 1s linear infinite;
 }
 
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 /* Main Page */
 #main-page {
     display: none;
@@ -97,7 +107,6 @@ body {
     width: 100%;
     background-color: #111;
     border-bottom: 2px solid #00ff00;
-    z-index: 1000;
 }
 
 .tab-button {
@@ -121,7 +130,7 @@ body {
 .tab-content {
     display: none;
     padding: 20px;
-    margin-top: 60px; /* Offset to push content below tabs */
+    margin-top: 60px;
 }
 
 .tab-content.active {
