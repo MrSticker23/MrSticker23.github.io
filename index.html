@@ -6,7 +6,7 @@
     <title>Card Game Calculators</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; background-color: #f4f4f4; transition: opacity 1s ease-in-out; }
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f4f4f4; transition: opacity 1s ease-in-out; }
 
         /* Loading Screen */
         #loading-screen {
@@ -29,7 +29,7 @@
         }
 
         /* Main Content Layout */
-        .container { display: flex; max-width: 1200px; width: 100%; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        .container { display: flex; max-width: 1200px; width: 100%; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); justify-content: space-between; align-items: flex-start; }
         .form-container { width: 60%; padding-right: 20px; }
         .result-container { width: 35%; padding-left: 20px; }
         h1 { text-align: center; margin-bottom: 20px; font-size: 2rem; }
@@ -43,7 +43,10 @@
         button:hover { background-color: #45a049; }
         .advanced { display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
         .advanced input { width: auto; }
-        .result { margin-top: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px; height: 100%; overflow-y: auto; }
+
+        /* Result Text Styling */
+        .result { margin-top: 20px; padding: 20px; background-color: #f0f0f0; border-radius: 10px; height: 100%; overflow-y: auto; font-size: 1.2rem; line-height: 1.6; color: #333; white-space: pre-line; word-wrap: break-word; }
+        .result p { margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -156,11 +159,11 @@
 
         // Toggle advanced input
         function toggleAdvanced(advancedId) {
-            const advancedSection = document.getElementById(advancedId);
-            advancedSection.style.display = advancedSection.style.display === 'grid' ? 'none' : 'grid';
+            const advanced = document.getElementById(advancedId);
+            advanced.style.display = advanced.style.display === 'none' ? 'grid' : 'none';
         }
 
-        // Blackjack Calculator
+        // Blackjack calculation
         function calculateBlackjack() {
             const playerHand = [
                 document.getElementById('card-1-bj').value.trim(),
@@ -176,11 +179,11 @@
             const luckFactor = calculateLuck(handStrength, bet);
 
             const resultText = `
-                Hand: ${playerHand.join(', ')}<br>
-                Hand Value: ${handValue}<br>
-                Suggestion: ${suggestion}<br>
-                Luck Factor: ${luckFactor}<br>
-                Hand Strength: ${handStrength}
+                <p><strong>Hand:</strong> ${playerHand.join(', ')}</p>
+                <p><strong>Hand Value:</strong> ${handValue}</p>
+                <p><strong>Suggestion:</strong> ${suggestion}</p>
+                <p><strong>Luck Factor:</strong> $${luckFactor.toFixed(2)}</p>
+                <p><strong>Hand Strength:</strong> ${handStrength}</p>
             `;
             document.getElementById('result-bj').innerHTML = resultText;
         }
