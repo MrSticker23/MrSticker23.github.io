@@ -3,42 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My GitHub Page</title>
+    <title>Blackjack Calculator</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-        }
-        .container {
-            text-align: center;
-        }
-        .button {
-            display: inline-block;
-            padding: 12px 24px;
-            margin: 10px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007bff;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        input, button { margin: 5px; padding: 10px; }
+        #result, #luck-result, #log-display { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to My Website</h1>
-        <a href="signup.html" class="button">Sign Up</a>
-        <a href="login.html" class="button">Login</a>
-        <a href="#" class="button" id="premium">Buy Premium</a>
+    <h1>Blackjack Calculator</h1>
+
+    <!-- Odds Calculator -->
+    <div>
+        <h2>Odds Calculator</h2>
+        <input id="player-hand" type="text" placeholder="Enter your cards (e.g., 10, A)">
+        <input id="dealer-card" type="text" placeholder="Enter dealer's card (e.g., 8)">
+        <button onclick="calculateOdds()">Calculate Odds</button>
+        <div id="result"></div>
     </div>
+
+    <!-- Luck System -->
+    <div>
+        <h2>Luck System</h2>
+        <input id="current-bet" type="number" placeholder="Enter your current bet">
+        <button onclick="calculateLuck()">Check Luck</button>
+        <div id="luck-result"></div>
+    </div>
+
+    <!-- Log System -->
+    <div>
+        <h2>Win/Loss Log</h2>
+        <button onclick="logResult('win')">Log Win</button>
+        <button onclick="logResult('loss')">Log Loss</button>
+        <button onclick="showLog()">Show Log</button>
+        <div id="log-display"></div>
+    </div>
+
+    <script>
+        // Odds Calculator
+        function calculateOdds() {
+            const playerHand = document.getElementById('player-hand').value;
+            const dealerCard = document.getElementById('dealer-card').value;
+            let suggestion = "Stand"; // Basic placeholder logic
+
+            // Basic logic: if player hand includes Ace or high card, suggest hit (just for demo)
+            if (playerHand.includes('A') || parseInt(dealerCard) >= 7) {
+                suggestion = "Hit";
+            }
+            
+            document.getElementById('result').innerText = `Suggestion: ${suggestion}`;
+        }
+
+        // Luck System
+        function calculateLuck() {
+            const bet = parseFloat(document.getElementById('current-bet').value);
+            const odds = Math.random(); // Simulate odds calculation
+            const suggestion = odds > 0.5 ? 'Increase' : 'Hold';
+            const betAmount = suggestion === 'Increase' ? bet * 1.5 : bet;
+
+            document.getElementById('luck-result').innerText = 
+                `Luck Suggestion: ${suggestion} your bet to $${betAmount.toFixed(2)}`;
+        }
+
+        // Log Win/Loss
+        function logResult(result) {
+            let logs = JSON.parse(localStorage.getItem('logs')) || [];
+            logs.push({ result: result, timestamp: new Date().toLocaleString() });
+            localStorage.setItem('logs', JSON.stringify(logs));
+            alert(`Logged a ${result}!`);
+        }
+
+        // Show Log
+        function showLog() {
+            let logs = JSON.parse(localStorage.getItem('logs')) || [];
+            const logDisplay = logs.map(log => `${log.timestamp}: ${log.result}`).join('<br>');
+            document.getElementById('log-display').innerHTML = logDisplay || 'No logs yet.';
+        }
+    </script>
 </body>
 </html>
+
