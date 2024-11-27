@@ -62,8 +62,17 @@
         <!-- Blackjack Content -->
         <div id="blackjack" class="content active">
             <h2>Blackjack Bet Calculator</h2>
-            <input id="player-hand-bj" type="text" placeholder="Enter your cards (e.g., 10, A)">
-            <input id="current-bet-bj" type="number" placeholder="Enter your current bet">
+            <div>
+                <label for="player-hand-bj">Enter your cards (e.g., 10, A, K):</label>
+                <input id="card-1-bj" type="text" placeholder="Card 1">
+                <input id="card-2-bj" type="text" placeholder="Card 2">
+                <input id="card-3-bj" type="text" placeholder="Card 3 (optional)">
+                <input id="card-4-bj" type="text" placeholder="Card 4 (optional)">
+            </div>
+            <div>
+                <label for="current-bet-bj">Enter your current bet:</label>
+                <input id="current-bet-bj" type="number" placeholder="Current Bet">
+            </div>
             <button onclick="calculateBlackjack()">Calculate</button>
             <button onclick="toggleAdvanced('blackjack-advanced')">Advanced Mode</button>
 
@@ -84,9 +93,23 @@
         <!-- Texas Hold'em Content -->
         <div id="texas-holdem" class="content">
             <h2>Texas Hold'em Calculator</h2>
-            <input id="player-hand-th" type="text" placeholder="Enter your hand (e.g., A♥, K♠)">
-            <input id="community-cards" type="text" placeholder="Enter community cards (e.g., 10♦, J♥, Q♣)">
-            <input id="current-bet-th" type="number" placeholder="Enter your current bet">
+            <div>
+                <label for="player-hand-th">Enter your hand (e.g., A♥, K♠):</label>
+                <input id="card-1-th" type="text" placeholder="Card 1">
+                <input id="card-2-th" type="text" placeholder="Card 2">
+            </div>
+            <div>
+                <label for="community-cards">Enter community cards (e.g., 10♦, J♥, Q♣):</label>
+                <input id="community-card-1" type="text" placeholder="Community Card 1">
+                <input id="community-card-2" type="text" placeholder="Community Card 2">
+                <input id="community-card-3" type="text" placeholder="Community Card 3">
+                <input id="community-card-4" type="text" placeholder="Community Card 4 (optional)">
+                <input id="community-card-5" type="text" placeholder="Community Card 5 (optional)">
+            </div>
+            <div>
+                <label for="current-bet-th">Enter your current bet:</label>
+                <input id="current-bet-th" type="number" placeholder="Current Bet">
+            </div>
             <button onclick="calculateTexasHoldem()">Calculate</button>
             <button onclick="toggleAdvanced('texas-advanced')">Advanced Mode</button>
 
@@ -133,36 +156,23 @@
 
         // Blackjack Calculator
         function calculateBlackjack() {
-            const playerHand = document.getElementById('player-hand-bj').value.split(',').map(card => card.trim());
+            const playerHand = [
+                document.getElementById('card-1-bj').value,
+                document.getElementById('card-2-bj').value,
+                document.getElementById('card-3-bj').value,
+                document.getElementById('card-4-bj').value
+            ].filter(card => card !== "");
             const bet = parseFloat(document.getElementById('current-bet-bj').value);
-            let suggestion = "Stand", multiplier = 1, winPercentage = 0;
-            const totalValue = calculateHandValue(playerHand);
 
-            if (totalValue < 17) { suggestion = "Hit"; multiplier = 1.2; winPercentage = 40; }
-            else if (totalValue < 20) { multiplier = 1.5; winPercentage = 60; }
-            else if (totalValue === 20) { multiplier = 1.8; winPercentage = 80; }
-            else { multiplier = 2.0; winPercentage = 95; }
+            const handValue = calculateHandValue(playerHand);
+            const handStrength = evaluateHandStrength(playerHand);
+            let suggestion = handValue > 21 ? 'Busted!' : (handValue >= 17 ? 'Stand' : 'Hit');
 
+            // Simplified bet multiplier based on hand value (could be more complex)
+            const multiplier = handValue >= 17 ? 1.5 : 2.0;
             const adjustedBet = (bet * multiplier).toFixed(2);
+
             document.getElementById('result-bj').innerHTML = `
-                Suggestion: <strong>${suggestion}</strong><br>
-                Suggested Bet Amount: <strong>$${adjustedBet}</strong><br>
-                Win Probability: <strong>${winPercentage}%</strong>
-            `;
-        }
-
-        // Texas Hold'em Calculator
-        function calculateTexasHoldem() {
-            const playerHand = document.getElementById('player-hand-th').value.split(',').map(card => card.trim());
-            const communityCards = document.getElementById('community-cards').value.split(',').map(card => card.trim());
-            const bet = parseFloat(document.getElementById('current-bet-th').value);
-            const combinedHand = playerHand.concat(communityCards);
-            const handStrength = evaluateHandStrength(combinedHand);
-            const suggestion = handStrength.rank >= 2 ? "Bet" : "Check/Fold";
-            const multiplier = handStrength.rank / 2 + 1;
-            const adjustedBet = (bet * multiplier).toFixed(2);
-
-            document.getElementById('result-th').innerHTML = `
                 Hand: ${handStrength.name}<br>
                 Suggestion: <strong>${suggestion}</strong><br>
                 Suggested Bet Amount: <strong>$${adjustedBet}</strong>
@@ -171,7 +181,6 @@
 
         // Dummy function to evaluate hand strength (this can be expanded later)
         function evaluateHandStrength(hand) {
-            // For simplicity, just counting pairs, etc.
             const handRanks = hand.map(card => card.split(' ')[0]);
             let pairs = handRanks.filter((val, index, self) => self.indexOf(val) !== index).length;
             return { rank: pairs, name: pairs ? 'Pair' : 'High Card' };
@@ -188,6 +197,34 @@
             });
             while (value > 21 && aceCount > 0) { value -= 10; aceCount--; }
             return value;
+        }
+
+        // Texas Hold'em Calculator (simple version for now)
+        function calculateTexasHoldem() {
+            const playerHand = [
+                document.getElementById('card-1-th').value,
+                document.getElementById('card-2-th').value
+            ].filter(card => card !== "");
+            const communityCards = [
+                document.getElementById('community-card-1').value,
+                document.getElementById('community-card-2').value,
+                document.getElementById('community-card-3').value,
+                document.getElementById('community-card-4').value,
+                document.getElementById('community-card-5').value
+            ].filter(card => card !== "");
+
+            let handStrength = evaluateTexasHand(playerHand, communityCards);
+            let suggestion = "Not Yet Calculated"; // Placeholder for more logic
+
+            document.getElementById('result-th').innerHTML = `
+                Hand: ${handStrength}<br>
+                Suggestion: <strong>${suggestion}</strong>
+            `;
+        }
+
+        // Simple Texas Hold'em Hand Evaluator (for now)
+        function evaluateTexasHand(playerHand, communityCards) {
+            return `Pair of ${playerHand[0]}`; // Placeholder logic
         }
     </script>
 </body>
