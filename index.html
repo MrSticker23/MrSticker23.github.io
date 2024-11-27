@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Secure Access</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Protected App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="password-container">
-    <h1>🔒 Secure Access</h1>
-    <input type="password" id="password-input" placeholder="Enter Password">
-    <button id="submit-button">Access</button>
-    <p id="error-message">Incorrect password. Try again.</p>
-  </div>
+    <!-- Password Screen -->
+    <div id="password-screen">
+        <h2>Enter Password</h2>
+        <input type="password" id="password-input" placeholder="Enter password">
+        <button id="submit-button">Submit</button>
+    </div>
 
-  <div id="loading-screen">
-    <h2>Loading...</h2>
-  </div>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+    </div>
 
-  <div id="main-content">
-    <h1>Welcome, Operator!</h1>
-    <p>Access Granted. Enjoy your mission.</p>
-  </div>
+    <!-- Main Page -->
+    <div id="main-page">
+        <h1>Welcome to the Main Page!</h1>
+        <p>This is the content of the main page.</p>
+    </div>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
