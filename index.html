@@ -3,110 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack Bet Calculator</title>
+    <title>Card Game Calculators</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .tab { display: inline-block; margin: 0 10px; padding: 10px 20px; cursor: pointer; background-color: #ddd; border-radius: 5px; }
+        .tab.active { background-color: #bbb; }
+        .content { display: none; margin-top: 20px; }
+        .content.active { display: block; }
         input, button { margin: 5px; padding: 10px; }
         #result, #log-display { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h1>Blackjack Bet Calculator</h1>
+    <h1>Card Game Calculators</h1>
 
-    <!-- Odds & Bet Calculator -->
+    <!-- Tabs -->
     <div>
-        <h2>Calculate Your Move and Bet</h2>
-        <input id="player-hand" type="text" placeholder="Enter your cards (e.g., 10, A)">
-        <input id="current-bet" type="number" placeholder="Enter your current bet">
-        <button onclick="calculateOddsAndBet()">Calculate</button>
-        <div id="result"></div>
+        <div class="tab active" onclick="switchTab('blackjack')">Blackjack</div>
+        <div class="tab" onclick="switchTab('texas-holdem')">Texas Hold'em</div>
     </div>
 
-    <!-- Log System -->
-    <div>
-        <h2>Win/Loss Log</h2>
-        <button onclick="logResult('win')">Log Win</button>
-        <button onclick="logResult('loss')">Log Loss</button>
-        <button onclick="showLog()">Show Log</button>
-        <div id="log-display"></div>
+    <!-- Blackjack Content -->
+    <div id="blackjack" class="content active">
+        <h2>Blackjack Bet Calculator</h2>
+        <input id="player-hand-bj" type="text" placeholder="Enter your cards (e.g., 10, A)">
+        <input id="current-bet-bj" type="number" placeholder="Enter your current bet">
+        <button onclick="calculateBlackjack()">Calculate</button>
+        <div id="result-bj"></div>
+    </div>
+
+    <!-- Texas Hold'em Content -->
+    <div id="texas-holdem" class="content">
+        <h2>Texas Hold'em Calculator</h2>
+        <input id="player-hand-th" type="text" placeholder="Enter your hand (e.g., A♥, K♠)">
+        <input id="community-cards" type="text" placeholder="Enter community cards (e.g., 10♦, J♥, Q♣)">
+        <input id="current-bet-th" type="number" placeholder="Enter your current bet">
+        <button onclick="calculateTexasHoldem()">Calculate</button>
+        <div id="result-th"></div>
     </div>
 
     <script>
-        // Odds & Bet Calculator
-        function calculateOddsAndBet() {
-            const playerHand = document.getElementById('player-hand').value.split(',').map(card => card.trim());
-            const bet = parseFloat(document.getElementById('current-bet').value);
+        // Tab switching function
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`.tab:contains('${tabName}')`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
 
-            const totalValue = calculateHandValue(playerHand);
+        // Blackjack Calculator
+        function calculateBlackjack() {
+            const playerHand = document.getElementById('player-hand-bj').value.split(',').map(card => card.trim());
+            const bet = parseFloat(document.getElementById('current-bet-bj').value);
             let suggestion = "Stand";
-            let multiplier = 1; // Default multiplier for betting
-            let winPercentage = 0; // Default win chance
+            let multiplier = 1, winPercentage = 0;
+            const totalValue = calculateHandValue(playerHand);
 
-            // Dynamic odds, suggestion, and win percentage based on hand value
-            if (totalValue < 17) {
-                suggestion = "Hit";
-                multiplier = 1.2;
-                winPercentage = 40;
-            } else if (totalValue >= 17 && totalValue < 20) {
-                suggestion = "Stand";
-                multiplier = 1.5;
-                winPercentage = 60;
-            } else if (totalValue === 20) {
-                suggestion = "Stand";
-                multiplier = 1.8;
-                winPercentage = 80;
-            } else if (totalValue === 21) {
-                suggestion = "Stand";
-                multiplier = 2.0;
-                winPercentage = 95;
-            }
+            if (totalValue < 17) { suggestion = "Hit"; multiplier = 1.2; winPercentage = 40; }
+            else if (totalValue < 20) { multiplier = 1.5; winPercentage = 60; }
+            else if (totalValue === 20) { multiplier = 1.8; winPercentage = 80; }
+            else { multiplier = 2.0; winPercentage = 95; }
 
             const adjustedBet = (bet * multiplier).toFixed(2);
-            document.getElementById('result').innerHTML = `
+            document.getElementById('result-bj').innerHTML = `
                 Suggestion: <strong>${suggestion}</strong><br>
                 Suggested Bet Amount: <strong>$${adjustedBet}</strong><br>
                 Win Probability: <strong>${winPercentage}%</strong>
             `;
         }
 
-        // Calculate hand value (simplified)
+        // Texas Hold'em Calculator
+        function calculateTexasHoldem() {
+            const playerHand = document.getElementById('player-hand-th').value.split(',').map(card => card.trim());
+            const communityCards = document.getElementById('community-cards').value.split(',').map(card => card.trim());
+            const bet = parseFloat(document.getElementById('current-bet-th').value);
+
+            // Calculate hand strength and suggestion
+            const combinedHand = playerHand.concat(communityCards);
+            const handStrength = evaluateHandStrength(combinedHand);
+            const suggestion = handStrength.rank >= 2 ? "Bet" : "Check/Fold"; // Adjust based on strength
+            const multiplier = handStrength.rank / 2 + 1;
+            const adjustedBet = (bet * multiplier).toFixed(2);
+
+            document.getElementById('result-th').innerHTML = `
+                Hand: <strong>${handStrength.name}</strong><br>
+                Suggestion: <strong>${suggestion}</strong><br>
+                Suggested Bet Amount: <strong>$${adjustedBet}</strong>
+            `;
+        }
+
+        // Hand strength evaluation (simplified)
+        function evaluateHandStrength(cards) {
+            // Basic example: check for a pair
+            const ranks = cards.map(card => card.slice(0, -1));
+            const rankCount = {};
+            ranks.forEach(rank => rankCount[rank] = (rankCount[rank] || 0) + 1);
+
+            if (Object.values(rankCount).includes(4)) return { name: "Four of a Kind", rank: 7 };
+            if (Object.values(rankCount).includes(3)) return { name: "Three of a Kind", rank: 3 };
+            if (Object.values(rankCount).includes(2)) return { name: "Pair", rank: 2 };
+            return { name: "High Card", rank: 1 };
+        }
+
+        // Blackjack hand value calculation (same as before)
         function calculateHandValue(hand) {
-            let value = 0;
-            let aceCount = 0;
-
+            let value = 0, aceCount = 0;
             hand.forEach(card => {
-                if (card === 'A') {
-                    aceCount++;
-                    value += 11;
-                } else if (['K', 'Q', 'J'].includes(card)) {
-                    value += 10;
-                } else {
-                    value += parseInt(card);
-                }
+                if (card === 'A') { aceCount++; value += 11; }
+                else if (['K', 'Q', 'J'].includes(card)) value += 10;
+                else value += parseInt(card);
             });
-
-            // Adjust for Aces (convert to 1 if needed)
-            while (value > 21 && aceCount > 0) {
-                value -= 10;
-                aceCount--;
-            }
-
+            while (value > 21 && aceCount > 0) { value -= 10; aceCount--; }
             return value;
-        }
-
-        // Log Win/Loss
-        function logResult(result) {
-            let logs = JSON.parse(localStorage.getItem('logs')) || [];
-            logs.push({ result: result, timestamp: new Date().toLocaleString() });
-            localStorage.setItem('logs', JSON.stringify(logs));
-            alert(`Logged a ${result}!`);
-        }
-
-        // Show Log
-        function showLog() {
-            let logs = JSON.parse(localStorage.getItem('logs')) || [];
-            const logDisplay = logs.map(log => `${log.timestamp}: ${log.result}`).join('<br>');
-            document.getElementById('log-display').innerHTML = logDisplay || 'No logs yet.';
         }
     </script>
 </body>
