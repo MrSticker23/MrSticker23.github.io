@@ -101,7 +101,7 @@ body {
 /* Tabs */
 .tabs {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center; /* Centering the tabs */
     position: fixed;
     top: 0;
     width: 100%;
@@ -110,8 +110,7 @@ body {
 }
 
 .tab-button {
-    flex: 1;
-    padding: 14px;
+    padding: 14px 20px;
     font-size: 16px;
     color: #00ff00;
     background: none;
