@@ -3,13 +3,13 @@ body {
     font-family: 'Courier New', Courier, monospace;
     height: 100vh;
     display: flex;
+    flex-direction: column; /* Make sure content flows top-down */
     justify-content: center;
     align-items: center;
     background-color: #000;
     color: #00ff00;
 }
 
-/* Password Screen */
 #password-screen {
     text-align: center;
     background-color: #111;
@@ -52,7 +52,6 @@ body {
     display: none;
 }
 
-/* Loading Screen */
 #loading-screen {
     display: none;
     justify-content: center;
@@ -91,17 +90,20 @@ body {
     display: none;
     opacity: 0;
     transition: opacity 1s ease-in;
+    width: 100%; /* Make the main page full width */
+    max-width: 1200px; /* Optional: set a max width for layout */
+    margin: 0 auto; /* Center the content */
 }
 
-/* Tabs */
 .tabs {
     display: flex;
-    justify-content: center; /* Centering the tabs */
+    justify-content: center; /* Center the tabs horizontally */
     position: fixed;
     top: 0;
     width: 100%;
     background-color: #111;
     border-bottom: 2px solid #00ff00;
+    z-index: 100; /* Ensure tabs stay on top */
 }
 
 .tab-button {
@@ -125,14 +127,20 @@ body {
     display: none;
     padding: 20px;
     margin-top: 60px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    position: absolute;
+    top: 0;
+    width: 100%; /* Ensure content takes full width */
+    max-width: 1200px; /* Optional: maintain max width for content */
+    margin: 0 auto; /* Center the content */
 }
 
 .tab-content.active {
     display: block;
+    opacity: 1;
 }
 
-
-/* Additional styles for links in Events */
 #events a {
     color: #00ff00;
     text-decoration: none;
@@ -142,4 +150,3 @@ body {
 #events a:hover {
     text-decoration: underline;
 }
-
