@@ -40,26 +40,32 @@
             const totalValue = calculateHandValue(playerHand);
             let suggestion = "Stand";
             let multiplier = 1; // Default multiplier for betting
+            let winPercentage = 0; // Default win chance
 
-            // Dynamic odds and suggestion based on hand value
+            // Dynamic odds, suggestion, and win percentage based on hand value
             if (totalValue < 17) {
                 suggestion = "Hit";
-                multiplier = 1.2; // Lower odds if hand is weak
+                multiplier = 1.2;
+                winPercentage = 40;
             } else if (totalValue >= 17 && totalValue < 20) {
                 suggestion = "Stand";
                 multiplier = 1.5;
+                winPercentage = 60;
             } else if (totalValue === 20) {
                 suggestion = "Stand";
                 multiplier = 1.8;
+                winPercentage = 80;
             } else if (totalValue === 21) {
                 suggestion = "Stand";
-                multiplier = 2.0; // Strong hand, higher bet multiplier
+                multiplier = 2.0;
+                winPercentage = 95;
             }
 
             const adjustedBet = (bet * multiplier).toFixed(2);
             document.getElementById('result').innerHTML = `
                 Suggestion: <strong>${suggestion}</strong><br>
-                Suggested Bet Amount: <strong>$${adjustedBet}</strong>
+                Suggested Bet Amount: <strong>$${adjustedBet}</strong><br>
+                Win Probability: <strong>${winPercentage}%</strong>
             `;
         }
 
