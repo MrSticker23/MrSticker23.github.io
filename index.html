@@ -3,31 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack Calculator</title>
+    <title>Blackjack Bet Calculator</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
         input, button { margin: 5px; padding: 10px; }
-        #result, #luck-result, #log-display { margin-top: 20px; }
+        #result, #log-display { margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h1>Blackjack Calculator</h1>
+    <h1>Blackjack Bet Calculator</h1>
 
-    <!-- Odds Calculator -->
+    <!-- Odds & Bet Calculator -->
     <div>
-        <h2>Odds Calculator</h2>
+        <h2>Calculate Your Move and Bet</h2>
         <input id="player-hand" type="text" placeholder="Enter your cards (e.g., 10, A)">
-        <input id="dealer-card" type="text" placeholder="Enter dealer's card (e.g., 8)">
-        <button onclick="calculateOdds()">Calculate Odds</button>
-        <div id="result"></div>
-    </div>
-
-    <!-- Luck System -->
-    <div>
-        <h2>Luck System</h2>
         <input id="current-bet" type="number" placeholder="Enter your current bet">
-        <button onclick="calculateLuck()">Check Luck</button>
-        <div id="luck-result"></div>
+        <button onclick="calculateOddsAndBet()">Calculate</button>
+        <div id="result"></div>
     </div>
 
     <!-- Log System -->
@@ -40,29 +32,51 @@
     </div>
 
     <script>
-        // Odds Calculator
-        function calculateOdds() {
-            const playerHand = document.getElementById('player-hand').value;
-            const dealerCard = document.getElementById('dealer-card').value;
-            let suggestion = "Stand"; // Basic placeholder logic
+        // Odds & Bet Calculator
+        function calculateOddsAndBet() {
+            const playerHand = document.getElementById('player-hand').value.split(',').map(card => card.trim());
+            const bet = parseFloat(document.getElementById('current-bet').value);
+            let suggestion = "Stand"; // Default suggestion
+            let betMultiplier = 1; // Default multiplier
 
-            // Basic logic: if player hand includes Ace or high card, suggest hit (just for demo)
-            if (playerHand.includes('A') || parseInt(dealerCard) >= 7) {
+            // Simple logic: If hand contains Ace or is low (< 16), suggest Hit
+            const totalValue = calculateHandValue(playerHand);
+
+            if (totalValue < 17) {
                 suggestion = "Hit";
+                betMultiplier = 1.5; // Increase bet if you should hit
             }
-            
-            document.getElementById('result').innerText = `Suggestion: ${suggestion}`;
+
+            const adjustedBet = (bet * betMultiplier).toFixed(2);
+            document.getElementById('result').innerHTML = `
+                Suggestion: <strong>${suggestion}</strong><br>
+                Suggested Bet Amount: <strong>$${adjustedBet}</strong>
+            `;
         }
 
-        // Luck System
-        function calculateLuck() {
-            const bet = parseFloat(document.getElementById('current-bet').value);
-            const odds = Math.random(); // Simulate odds calculation
-            const suggestion = odds > 0.5 ? 'Increase' : 'Hold';
-            const betAmount = suggestion === 'Increase' ? bet * 1.5 : bet;
+        // Calculate hand value (simplified)
+        function calculateHandValue(hand) {
+            let value = 0;
+            let aceCount = 0;
 
-            document.getElementById('luck-result').innerText = 
-                `Luck Suggestion: ${suggestion} your bet to $${betAmount.toFixed(2)}`;
+            hand.forEach(card => {
+                if (card === 'A') {
+                    aceCount++;
+                    value += 11;
+                } else if (['K', 'Q', 'J'].includes(card)) {
+                    value += 10;
+                } else {
+                    value += parseInt(card);
+                }
+            });
+
+            // Adjust for Aces (convert to 1 if needed)
+            while (value > 21 && aceCount > 0) {
+                value -= 10;
+                aceCount--;
+            }
+
+            return value;
         }
 
         // Log Win/Loss
@@ -82,4 +96,3 @@
     </script>
 </body>
 </html>
-
