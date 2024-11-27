@@ -1,224 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card Game Calculators</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f4f4f4; transition: opacity 1s ease-in-out; }
-
-        /* Loading Screen */
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7); color: #fff; display: flex;
-            justify-content: center; align-items: center; font-size: 24px; z-index: 9999;
-            opacity: 1; transition: opacity 1s ease-in-out;
-        }
-        .spinner {
-            border: 4px solid transparent;
-            border-top: 4px solid #fff;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Main Content Layout */
-        .container { display: flex; max-width: 1200px; width: 100%; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); justify-content: space-between; align-items: flex-start; }
-        .form-container { width: 60%; padding-right: 20px; }
-        .result-container { width: 35%; padding-left: 20px; }
-        h1 { text-align: center; margin-bottom: 20px; font-size: 2rem; }
-        .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; cursor: pointer; background-color: #ddd; border-radius: 5px; margin: 0 5px; font-weight: bold; }
-        .tab.active { background-color: #333; color: #fff; }
-        .content { display: none; }
-        .content.active { display: block; }
-        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; font-size: 1rem; }
-        button { background-color: #4CAF50; color: white; cursor: pointer; border: none; }
-        button:hover { background-color: #45a049; }
-        .advanced { display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
-        .advanced input { width: auto; }
-
-        /* Result Text Styling */
-        .result { margin-top: 20px; padding: 20px; background-color: #f0f0f0; border-radius: 10px; height: 100%; overflow-y: auto; font-size: 1.2rem; line-height: 1.6; color: #333; white-space: pre-line; word-wrap: break-word; }
-        .result p { margin: 10px 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web App</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Loading Screen with Spinner -->
-    <div id="loading-screen">
-        <div class="spinner"></div>
-        <div>Entering the Stacked Deck Society...</div>
-    </div>
+  <div id="password-container">
+    <h1>Enter Password</h1>
+    <input type="password" id="password-input" placeholder="Enter password">
+    <button id="submit-button">Submit</button>
+    <p id="error-message" style="display: none;">Incorrect password. Try again.</p>
+  </div>
 
-    <!-- Main Content Container -->
-    <div class="container">
-        <div class="form-container">
-            <h1>Card Game Calculators</h1>
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('blackjack')">Blackjack</div>
-                <div class="tab" onclick="switchTab('texas-holdem')">Texas Hold'em</div>
-            </div>
+  <div id="loading-screen" style="display: none;">
+    <h2>Loading...</h2>
+  </div>
 
-            <!-- Blackjack Content -->
-            <div id="blackjack" class="content active">
-                <h2>Blackjack Bet Calculator</h2>
-                <div>
-                    <label for="player-hand-bj">Enter your cards (e.g., 10, A, K):</label>
-                    <input id="card-1-bj" type="text" placeholder="Card 1">
-                    <input id="card-2-bj" type="text" placeholder="Card 2">
-                    <input id="card-3-bj" type="text" placeholder="Card 3 (optional)">
-                    <input id="card-4-bj" type="text" placeholder="Card 4 (optional)">
-                </div>
-                <div>
-                    <label for="current-bet-bj">Enter your current bet:</label>
-                    <input id="current-bet-bj" type="number" placeholder="Current Bet">
-                </div>
-                <button onclick="calculateBlackjack()">Calculate</button>
-                <button onclick="toggleAdvanced('blackjack-advanced')">Advanced Mode</button>
+  <div id="main-content" style="display: none;">
+    <h1>Welcome to the Main Page!</h1>
+    <p>This is your main content.</p>
+  </div>
 
-                <div id="blackjack-advanced" class="advanced">
-                    <div>
-                        <input type="text" placeholder="Rank (e.g., 10)">
-                        <input type="text" placeholder="Suit (e.g., Spades)">
-                    </div>
-                    <div>
-                        <input type="text" placeholder="Rank">
-                        <input type="text" placeholder="Suit">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Texas Hold'em Content -->
-            <div id="texas-holdem" class="content">
-                <h2>Texas Hold'em Calculator</h2>
-                <div>
-                    <label for="player-hand-th">Enter your hand (e.g., A♥, K♠):</label>
-                    <input id="card-1-th" type="text" placeholder="Card 1">
-                    <input id="card-2-th" type="text" placeholder="Card 2">
-                </div>
-                <div>
-                    <label for="community-cards">Enter community cards (e.g., 10♦, J♥, Q♣):</label>
-                    <input id="community-card-1" type="text" placeholder="Community Card 1">
-                    <input id="community-card-2" type="text" placeholder="Community Card 2">
-                    <input id="community-card-3" type="text" placeholder="Community Card 3">
-                    <input id="community-card-4" type="text" placeholder="Community Card 4 (optional)">
-                    <input id="community-card-5" type="text" placeholder="Community Card 5 (optional)">
-                </div>
-                <div>
-                    <label for="current-bet-th">Enter your current bet:</label>
-                    <input id="current-bet-th" type="number" placeholder="Current Bet">
-                </div>
-                <button onclick="calculateTexasHoldem()">Calculate</button>
-                <button onclick="toggleAdvanced('texas-advanced')">Advanced Mode</button>
-
-                <div id="texas-advanced" class="advanced">
-                    <div>
-                        <input type="text" placeholder="Rank">
-                        <input type="text" placeholder="Suit">
-                    </div>
-                    <div>
-                        <input type="text" placeholder="Rank">
-                        <input type="text" placeholder="Suit">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Result Container -->
-        <div class="result-container">
-            <div id="result-bj" class="result"></div>
-            <div id="result-th" class="result"></div>
-        </div>
-    </div>
-
-    <script>
-        // Hide loading screen and make transition smooth
-        window.onload = function() {
-            setTimeout(() => {
-                document.getElementById('loading-screen').style.opacity = '0'; // Fade out the loading screen
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none'; // Remove loading screen after fade-out
-                    document.body.style.opacity = '1'; // Show content
-                }, 1000); // Wait for 1 second (duration of the fade-out effect)
-            }, 2000); // Display for 2 seconds
-        };
-
-        // Tab switching function
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
-            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
-
-        // Toggle advanced input
-        function toggleAdvanced(advancedId) {
-            const advanced = document.getElementById(advancedId);
-            advanced.style.display = advanced.style.display === 'none' ? 'grid' : 'none';
-        }
-
-        // Blackjack calculation
-        function calculateBlackjack() {
-            const playerHand = [
-                document.getElementById('card-1-bj').value.trim(),
-                document.getElementById('card-2-bj').value.trim(),
-                document.getElementById('card-3-bj').value.trim(),
-                document.getElementById('card-4-bj').value.trim(),
-            ].filter(card => card !== "");
-
-            const bet = parseFloat(document.getElementById('current-bet-bj').value.trim());
-            const handValue = calculateHandValue(playerHand);
-            const handStrength = evaluateHandStrength(playerHand);
-            const suggestion = (handValue >= 17 || handStrength === 'Blackjack') ? 'Stand' : 'Hit';
-            const luckFactor = calculateLuck(handStrength, bet);
-
-            const resultText = `
-                <p><strong>Hand:</strong> ${playerHand.join(', ')}</p>
-                <p><strong>Hand Value:</strong> ${handValue}</p>
-                <p><strong>Suggestion:</strong> ${suggestion}</p>
-                <p><strong>Luck Factor:</strong> $${luckFactor.toFixed(2)}</p>
-                <p><strong>Hand Strength:</strong> ${handStrength}</p>
-            `;
-            document.getElementById('result-bj').innerHTML = resultText;
-        }
-
-        // Calculate hand value
-        function calculateHandValue(hand) {
-            let total = 0;
-            let aceCount = 0;
-            const cardValues = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': 11 };
-
-            hand.forEach(card => {
-                const cardRank = card.replace(/[^\w\s]/gi, '');  // Remove suit characters (e.g., ♠, ♥)
-                total += cardValues[cardRank];
-                if (cardRank === 'A') aceCount++;
-            });
-
-            while (total > 21 && aceCount > 0) {
-                total -= 10;
-                aceCount--;
-            }
-            return total;
-        }
-
-        // Evaluate hand strength (basic version)
-        function evaluateHandStrength(hand) {
-            if (hand.includes('A') && hand.length === 2) return 'Blackjack';
-            return hand.length === 2 ? 'Pair' : 'Bustable';
-        }
-
-        // Luck factor based on hand strength and current bet
-        function calculateLuck(handStrength, bet) {
-            if (handStrength === 'Blackjack') return bet * 2;
-            if (handStrength === 'Bustable') return bet * 0.5;
-            return bet * 1.5;  // General odds
-        }
-    </script>
+  <script src="script.js"></script>
 </body>
 </html>
