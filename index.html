@@ -13,9 +13,9 @@
         <input type="password" id="password-input" placeholder="Enter password">
 
         <!-- CAPTCHA -->
-        <div id="captcha">
+        <div id="captcha-container">
             <p id="captcha-question"></p>
-            <input type="text" id="captcha-answer" placeholder="Solve the captcha">
+            <input type="text" id="captcha-answer" placeholder="Solve the CAPTCHA">
         </div>
 
         <button id="submit-button">Submit</button>
@@ -33,6 +33,7 @@
             <button class="tab-button active" data-tab="announcements">Announcements</button>
             <button class="tab-button" data-tab="news">News</button>
             <button class="tab-button" data-tab="events">Events</button>
+            <button class="tab-button" data-tab="methods">Methods</button>
             <button class="tab-button" data-tab="contact">Contact</button>
         </div>
 
@@ -47,7 +48,22 @@
             </div>
             <div id="events" class="tab-content">
                 <h1>Events</h1>
-                <p>Upcoming events will be listed here.</p>
+                <ul>
+                    <li><a href="#">Event 1</a></li>
+                    <li><a href="#">Event 2</a></li>
+                    <li><a href="#">Event 3</a></li>
+                    <li><a href="#">Event 4</a></li>
+                </ul>
+            </div>
+            <div id="methods" class="tab-content">
+                <h1>Methods</h1>
+                <p>Here are the available methods:</p>
+                <ul>
+                    <li>Method 1: Description of method 1</li>
+                    <li>Method 2: Description of method 2</li>
+                    <li>Method 3: Description of method 3</li>
+                    <li>Method 4: Description of method 4</li>
+                </ul>
             </div>
             <div id="contact" class="tab-content">
                 <h1>Contact</h1>
@@ -59,4 +75,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
