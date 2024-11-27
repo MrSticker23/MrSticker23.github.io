@@ -12,12 +12,19 @@
         .content.active { display: block; }
         input, button { margin: 5px; padding: 10px; }
         #result, #log-display { margin-top: 20px; }
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #222; color: #fff; display: flex;
+            justify-content: center; align-items: center; font-size: 24px; z-index: 9999;
+        }
+        .advanced { display: none; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
+    <div id="loading-screen">Entering the Stacked Deck Society...</div>
+
     <h1>Card Game Calculators</h1>
 
-    <!-- Tabs -->
     <div>
         <div class="tab active" onclick="switchTab('blackjack')">Blackjack</div>
         <div class="tab" onclick="switchTab('texas-holdem')">Texas Hold'em</div>
@@ -29,6 +36,19 @@
         <input id="player-hand-bj" type="text" placeholder="Enter your cards (e.g., 10, A)">
         <input id="current-bet-bj" type="number" placeholder="Enter your current bet">
         <button onclick="calculateBlackjack()">Calculate</button>
+        <button onclick="toggleAdvanced('blackjack-advanced')">Advanced Mode</button>
+
+        <div id="blackjack-advanced" class="advanced">
+            <div>
+                <input type="text" placeholder="Rank (e.g., 10)">
+                <input type="text" placeholder="Suit (e.g., Spades)">
+            </div>
+            <div>
+                <input type="text" placeholder="Rank">
+                <input type="text" placeholder="Suit">
+            </div>
+        </div>
+
         <div id="result-bj"></div>
     </div>
 
@@ -39,25 +59,47 @@
         <input id="community-cards" type="text" placeholder="Enter community cards (e.g., 10♦, J♥, Q♣)">
         <input id="current-bet-th" type="number" placeholder="Enter your current bet">
         <button onclick="calculateTexasHoldem()">Calculate</button>
+        <button onclick="toggleAdvanced('texas-advanced')">Advanced Mode</button>
+
+        <div id="texas-advanced" class="advanced">
+            <div>
+                <input type="text" placeholder="Rank">
+                <input type="text" placeholder="Suit">
+            </div>
+            <div>
+                <input type="text" placeholder="Rank">
+                <input type="text" placeholder="Suit">
+            </div>
+        </div>
+
         <div id="result-th"></div>
     </div>
 
     <script>
+        // Hide loading screen
+        window.onload = function() {
+            setTimeout(() => document.getElementById('loading-screen').style.display = 'none', 2000);
+        };
+
         // Tab switching function
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
-
             document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
             document.getElementById(tabName).classList.add('active');
+        }
+
+        // Toggle advanced input
+        function toggleAdvanced(advancedId) {
+            const advancedSection = document.getElementById(advancedId);
+            advancedSection.style.display = advancedSection.style.display === 'grid' ? 'none' : 'grid';
         }
 
         // Blackjack Calculator
         function calculateBlackjack() {
             const playerHand = document.getElementById('player-hand-bj').value.split(',').map(card => card.trim());
             const bet = parseFloat(document.getElementById('current-bet-bj').value);
-            let suggestion = "Stand";
-            let multiplier = 1, winPercentage = 0;
+            let suggestion = "Stand", multiplier = 1, winPercentage = 0;
             const totalValue = calculateHandValue(playerHand);
 
             if (totalValue < 17) { suggestion = "Hit"; multiplier = 1.2; winPercentage = 40; }
@@ -78,11 +120,9 @@
             const playerHand = document.getElementById('player-hand-th').value.split(',').map(card => card.trim());
             const communityCards = document.getElementById('community-cards').value.split(',').map(card => card.trim());
             const bet = parseFloat(document.getElementById('current-bet-th').value);
-
-            // Calculate hand strength and suggestion
             const combinedHand = playerHand.concat(communityCards);
             const handStrength = evaluateHandStrength(combinedHand);
-            const suggestion = handStrength.rank >= 2 ? "Bet" : "Check/Fold"; 
+            const suggestion = handStrength.rank >= 2 ? "Bet" : "Check/Fold";
             const multiplier = handStrength.rank / 2 + 1;
             const adjustedBet = (bet * multiplier).toFixed(2);
 
@@ -93,7 +133,7 @@
             `;
         }
 
-        // Hand strength evaluation (simplified)
+        // Hand evaluation logic (simplified)
         function evaluateHandStrength(cards) {
             const ranks = cards.map(card => card.slice(0, -1));
             const rankCount = {};
