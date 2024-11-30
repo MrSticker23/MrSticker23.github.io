@@ -150,3 +150,60 @@ body {
 #events a:hover {
     text-decoration: underline;
 }
+
+.sellix-button-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 200px;
+}
+
+.product-image {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin-bottom: 15px;
+}
+
+.product-name {
+  color: #ffffff;
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.sellix-button {
+  padding: 12px 20px;
+  background-color: #613bea;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.sellix-button:hover {
+  background-color: #502eb2;
+  transform: scale(1.05);
+}
+
+.sellix-button:active {
+  background-color: #3e2292;
+  transform: scale(0.95);
+}
