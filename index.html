@@ -3,147 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Classroom</title>
-    <link rel="stylesheet" href="styles.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7099868100329345"
-     crossorigin="anonymous"></script>
+    <title>Website with Login and Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        #user-info {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        nav {
+            text-align: center;
+            margin: 20px;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        .home-content {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #moderation-panel {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .account-list {
+            flex: 1;
+            padding: 10px;
+            background: #f9f9f9;
+            border-right: 1px solid #ccc;
+        }
+
+        .account-list h3 {
+            text-align: center;
+        }
+
+        .edit-form {
+            flex: 2;
+            padding: 10px;
+        }
+
+        .edit-form label {
+            margin-top: 10px;
+        }
+
+        .edit-form button {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Password Screen -->
-    <div id="password-screen">
-        <h2>Enter Password</h2>
-        <input type="password" id="password-input" placeholder="Enter password">
 
-        <!-- CAPTCHA -->
-        <div id="captcha-container">
-            <p id="captcha-question"></p>
-            <input type="text" id="captcha-answer" placeholder="Solve the CAPTCHA">
-        </div>
+<header>
+    <h1>Welcome to My Website</h1>
+    <div id="user-info" class="hidden">Username: <span id="display-username"></span> | Balance: $<span id="display-balance"></span></div>
+</header>
 
-        <button id="submit-button">Submit</button>
-        <p id="error-message"></p>
+<nav>
+    <a href="#" onclick="showSection('signup')">Sign Up</a>
+    <a href="#" onclick="showSection('login')">Login</a>
+    <a href="#" onclick="showSection('home')">Home</a>
+    <a href="#" onclick="showSection('moderation')" id="moderation-link" class="hidden">Moderation Panel</a>
+</nav>
+
+<div id="signup" class="container">
+    <h2>Sign Up</h2>
+    <form onsubmit="handleSignup(event)">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Sign Up</button>
+    </form>
+</div>
+
+<div id="login" class="container hidden">
+    <h2>Login</h2>
+    <form onsubmit="handleLogin(event)">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" name="login-username" required>
+
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="login-password" required>
+
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+<div id="home" class="container hidden">
+    <div class="home-content">
+        <h2>Home Page</h2>
+        <p>Welcome to the home page! Use the navigation menu to sign up or log in.</p>
     </div>
-    
-    <div id="user-info">
-    <span id="username-display"></span> | <span id="currency-display"></span>
 </div>
-<!-- Loading Screen -->
-    <div id="loading-screen">
-        <div class="spinner"></div>
-    </div>
 
-    <!-- Main Page -->
-    <div id="main-page">
-        <div class="tabs">
-            <button class="tab-button active" data-tab="announcements">Announcements</button>
-            <button class="tab-button" data-tab="news">Links</button>
-            <button class="tab-button" data-tab="events">Shop</button>
-            <button class="tab-button" data-tab="methods">Methods</button>
-            <button class="tab-button" data-tab="contact">Contact</button>
+<div id="moderation" class="container hidden">
+    <h2>Moderation Panel</h2>
+    <div id="moderation-panel">
+        <div class="account-list">
+            <h3>Existing Accounts</h3>
+            <ul id="account-list"></ul>
         </div>
+        <div class="edit-form">
+            <h3>Edit Account Balance</h3>
+            <form onsubmit="handleEditBalance(event)">
+                <label for="edit-username">Username</label>
+                <input type="text" id="edit-username" required>
 
-        <div id="tab-content">
-            <div id="announcements" class="tab-content active">
-                <h1>Announcements</h1>
-                <p>discount code for products is STARTUP use for a 20% off discount in the shop 100 uses</p>
-                <p>TO USE CASHAPP TO PAY THE TOTAL MUST BE 1$ OR MORE</p>
-                <p>methods for unblocking coming soon when the method is out</p>
-                <p>i will announce it in this tab proxy links and other "school stuff"</p>
-                <p>can be bought in shop tab accepted payments are Cashapp, BTC, LTC, etc</p>
-                <p>i will add a way to contact me soon new links every week or when i want</p>
+                <label for="edit-balance">New Balance</label>
+                <input type="number" id="edit-balance" required>
 
-            </div>
-            <div id="news" class="tab-content">
-                <h1>Free Links</h1>
-                <p>free links will be here and less frequent you can buy</p>
-                <p>more in the shop tab</p>
-            </div>
-            <div id="events" class="tab-content">
-                <h1>Shop</h1>
-                <ul>
-                    <div class="sellix-button-container">
-  <!-- Product 1 -->
-  <div class="product-card">
-    <img src="https://discord.do/wp-content/uploads/2024/04/Interstellar.jpg" alt="Product 1" class="product-image">
-    <h3 class="product-name">Proxy Links</h3>
-    <button 
-      data-sellix-product="674a8403cb921" 
-      type="button" 
-      aria-label="Buy Product 1 with Sellix"
-      class="sellix-button"
-    >
-      Buy Now
-    </button>
-  </div>
+                <button type="submit">Update Balance</button>
+            </form>
 
-  <!-- Product 2 -->
-  <div class="product-card">
-    <img src="https://discord.do/wp-content/uploads/2024/04/Interstellar.jpg" alt="Product 2" class="product-image">
-    <h3 class="product-name">Infinite Proxy Links</h3>
-    <button 
-      data-sellix-product="674a851398bf8" 
-      type="button" 
-      aria-label="Buy Product 2 with Sellix"
-      class="sellix-button"
-    >
-      Buy Now
-    </button>
-  </div>
+            <h3>Ban Account</h3>
+            <form onsubmit="handleBanAccount(event)">
+                <label for="ban-username">Username</label>
+                <input type="text" id="ban-username" required>
 
-  <!-- Product 3 -->
-  <div class="product-card">
-    <img src="https://discord.do/wp-content/uploads/2024/04/Interstellar.jpg" alt="Product 3" class="product-image">
-    <h3 class="product-name">Product 3 Name</h3>
-    <button 
-      data-sellix-product="PRODUCT_UNIQID3" 
-      type="button" 
-      aria-label="Buy Product 3 with Sellix"
-      class="sellix-button"
-    >
-      Buy Now
-    </button>
-  </div>
+                <button type="submit">Ban User</button>
+            </form>
+        </div>
+    </div>
 </div>
-                </ul>
-            </div>
-            <div id="methods" class="tab-content">
-                <h1>Methods</h1>
-                <p>COMING SOON!!:</p>
-                <ul>
-                    <li>Method 1: Description of method 1</li>
-                    <li>Method 2: Description of method 2</li>
-                    <li>Method 3: Description of method 3</li>
-                    <li>Method 4: Description of method 4</li>
-                </ul>
-            </div>
-            <div id="contact" class="tab-content">
-    <h1>Contact</h1>
-    <h2>Contact Us</h2>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdPEH1I6b8agqbC3hB7Grtrb1JFyRal2zOA69BGkl8ZeLH48Q/viewform?embedded=true" 
-            width="640" 
-            height="1130" 
-            frameborder="0" 
-            marginheight="0" 
-            marginwidth="0">
-        Loading…
-    <div id="games" class="tab-content">
-        <><>
-        
-    </iframe>
-</div>
-    <script src="script.js"></script>
-<script src="https://cdn.sellix.io/static/js/embed.js"></script>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7099868100329345"
-     crossorigin="anonymous"></script>
-<!-- Test -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-7099868100329345"
-     data-ad-slot="4995702654"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
+
 <script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
+    const accounts = {
+        owner: { username: "Owner", password: "ownerpass", role: "Owner", balance: 1000 },
+        admins: [
+            { username: "Admin1", password: "admin1pass", role: "Admin", balance: 500 },
+            { username: "Admin2", password: "admin2pass", role: "Admin", balance: 500 },
+            { username: "Admin3", password: "admin3pass", role: "Admin", balance: 500 }
+        ],
+        users: []
+    };
+
+    let bannedAccounts = [];
+    let currentUser = null;
+
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.container');
+        sections.forEach(section => section.classList.add('hidden'));
+        document.getElementById(sectionId).classList.remove('hidden');
+
+        if (sectionId === 'moderation') {
+            populateAccountList();
+        }
+    }
+
+    function handleSignup(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const balance = 100; // Default starting balance
+        const newUser = { username, balance, role: "User" };
+        accounts.users.push(newUser);
+        currentUser = newUser;
+        updateUserInfo();
+        showSection('home');
+    }
+
+    function handleLogin(event) {
+        event.preventDefault();
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+
+        if (bannedAccounts.includes(username)) {
+            alert("This account has been banned.");
+            return;
+        }
+
+        if (username === accounts.owner.username && password === accounts.owner.password) {
+            currentUser = accounts.owner;
+            document.getElementById('moderation-link').classList.remove('hidden');
+        } else {
+            currentUser = accounts.admins.find(
+                admin => admin.username === username && admin.password === password
+            );
+        }
+
+        if (!currentUser) {
+            currentUser = accounts.users.find(user => user.username === username);
+        }
+
+        if (currentUser) {
+            updateUserInfo();
+            showSection('home');
+        } else {
+            alert("Invalid username or password");
+        }
+    }
+
+    function updateUserInfo() {
+        if (currentUser) {
+            document.getElementById('display-username').textContent = `${currentUser.username} (${currentUser.role})`;
+            document.getElementById('display-balance').textContent = currentUser.balance;
+            document.getElementById('user-info').classList.remove('hidden');
+        }
+    }
+
+    function populateAccountList() {
+        const list = document.getElementById('account-list');
+        list.innerHTML = '';
+
+        const allAccounts = [accounts.owner, ...accounts.admins, ...accounts.users];
+        allAccounts.forEach(account => {
+            const li = document.createElement('li');
+            li.textContent = `${account.username} (${account.role}) - $${account.balance}`;
+            list.appendChild(li);
+        });
+    }
+
+    function handleEditBalance(event) {
+        event.preventDefault();
+        const username = document.getElementById('edit-username').value;
+        const newBalance = parseFloat(document.getElementById('edit-balance').value);
+
+        const allAccounts = [accounts.owner, ...accounts.admins, ...accounts.users];
+        const account = allAccounts.find(acc => acc.username === username);
+
+        if (account) {
+            account.balance = newBalance;
+            populateAccountList();
+            alert(`Updated balance for ${username} to $${newBalance}`);
+        } else {
+            alert(`Account with username ${username} not found.`);
+        }
+    }
+
+    function handleBanAccount(event) {
+        event.preventDefault();
+        const username = document.getElementById('ban-username').value;
+
+        const allAccounts = [accounts.owner, ...accounts.admins, ...accounts.users];
+        const account = allAccounts.find(acc => acc.username === username);
+
+        if (account) {
+            bannedAccounts.push(username);
+            alert(`Successfully banned ${username}`);
+        } else {
+            alert(`Account with username ${username} not found.`);
+        }
+    }
 </script>
+
 </body>
 </html>
