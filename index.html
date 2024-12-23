@@ -199,7 +199,10 @@
 </div>
 
 <script>
-    const accounts = {
+    const accountsKey = "accountsData";
+    const bansKey = "bannedAccounts";
+
+    let accounts = {
         owner: { username: "Owner", password: "ownerpass", role: "Owner", balance: 1000 },
         admins: [
             { username: "Admin1", password: "admin1pass", role: "Admin", balance: 500 },
@@ -212,35 +215,43 @@
     let bannedAccounts = [];
     let currentUser = null;
 
-    function saveAccounts() {
-        localStorage.setItem('accounts', JSON.stringify(accounts));
-        localStorage.setItem('bannedAccounts', JSON.stringify(bannedAccounts));
+    // Save accounts and bans to localStorage
+    function saveData() {
+        localStorage.setItem(accountsKey, JSON.stringify(accounts));
+        localStorage.setItem(bansKey, JSON.stringify(bannedAccounts));
     }
 
-    function loadAccounts() {
-        const savedAccounts = localStorage.getItem('accounts');
-        const savedBans = localStorage.getItem('bannedAccounts');
+    // Load accounts and bans from localStorage
+    function loadData() {
+        const storedAccounts = localStorage.getItem(accountsKey);
+        const storedBans = localStorage.getItem(bansKey);
 
-        if (savedAccounts) {
-            const parsedAccounts = JSON.parse(savedAccounts);
-            accounts.owner = parsedAccounts.owner;
-            accounts.admins = parsedAccounts.admins;
-            accounts.users = parsedAccounts.users;
+        if (storedAccounts) {
+            accounts = JSON.parse(storedAccounts);
         }
 
-        if (savedBans) {
-            bannedAccounts = JSON.parse(savedBans);
+        if (storedBans) {
+            bannedAccounts = JSON.parse(storedBans);
         }
     }
 
-    // Call saveAccounts() whenever the data changes
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.container');
+        sections.forEach(section => section.classList.add('hidden'));
+        document.getElementById(sectionId).classList.remove('hidden');
+
+        if (sectionId === 'moderation') {
+            populateAccountList();
+        }
+    }
+
     function handleSignup(event) {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const balance = 100; // Default starting balance
         const newUser = { username, balance, role: "User" };
         accounts.users.push(newUser);
-        saveAccounts();
+        saveData();
         currentUser = newUser;
         updateUserInfo();
         showSection('home');
@@ -307,7 +318,7 @@
 
         if (account) {
             account.balance = newBalance;
-            saveAccounts();
+            saveData();
             populateAccountList();
             alert(`Updated balance for ${username} to $${newBalance}`);
         } else {
@@ -324,19 +335,20 @@
 
         if (account) {
             bannedAccounts.push(username);
-            saveAccounts();
+            saveData();
             alert(`Successfully banned ${username}`);
         } else {
             alert(`Account with username ${username} not found.`);
         }
     }
 
-    // Load accounts and banned users on page load
+    // Load data from localStorage on page load
     window.onload = function () {
-        loadAccounts();
+        loadData();
         populateAccountList();
     };
 </script>
+
 
 </body>
 </html>
