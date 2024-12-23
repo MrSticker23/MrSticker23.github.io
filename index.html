@@ -212,22 +212,35 @@
     let bannedAccounts = [];
     let currentUser = null;
 
-    function showSection(sectionId) {
-        const sections = document.querySelectorAll('.container');
-        sections.forEach(section => section.classList.add('hidden'));
-        document.getElementById(sectionId).classList.remove('hidden');
+    function saveAccounts() {
+        localStorage.setItem('accounts', JSON.stringify(accounts));
+        localStorage.setItem('bannedAccounts', JSON.stringify(bannedAccounts));
+    }
 
-        if (sectionId === 'moderation') {
-            populateAccountList();
+    function loadAccounts() {
+        const savedAccounts = localStorage.getItem('accounts');
+        const savedBans = localStorage.getItem('bannedAccounts');
+
+        if (savedAccounts) {
+            const parsedAccounts = JSON.parse(savedAccounts);
+            accounts.owner = parsedAccounts.owner;
+            accounts.admins = parsedAccounts.admins;
+            accounts.users = parsedAccounts.users;
+        }
+
+        if (savedBans) {
+            bannedAccounts = JSON.parse(savedBans);
         }
     }
 
+    // Call saveAccounts() whenever the data changes
     function handleSignup(event) {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const balance = 100; // Default starting balance
         const newUser = { username, balance, role: "User" };
         accounts.users.push(newUser);
+        saveAccounts();
         currentUser = newUser;
         updateUserInfo();
         showSection('home');
@@ -294,6 +307,7 @@
 
         if (account) {
             account.balance = newBalance;
+            saveAccounts();
             populateAccountList();
             alert(`Updated balance for ${username} to $${newBalance}`);
         } else {
@@ -310,11 +324,18 @@
 
         if (account) {
             bannedAccounts.push(username);
+            saveAccounts();
             alert(`Successfully banned ${username}`);
         } else {
             alert(`Account with username ${username} not found.`);
         }
     }
+
+    // Load accounts and banned users on page load
+    window.onload = function () {
+        loadAccounts();
+        populateAccountList();
+    };
 </script>
 
 </body>
