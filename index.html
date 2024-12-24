@@ -129,8 +129,43 @@
     <a href="#" onclick="showSection('signup')">Sign Up</a>
     <a href="#" onclick="showSection('login')">Login</a>
     <a href="#" onclick="showSection('home')">Home</a>
+    <a href="#" onclick="showSection('shop')">Shop</a>
+    <a href="#" onclick="showSection('inventory')">Inventory</a>
+    <a href="#" onclick="showSection('trade')">Trade</a>
     <a href="#" onclick="showSection('moderation')" id="moderation-link" class="hidden">Moderation Panel</a>
 </nav>
+
+
+<!-- Shop Section -->
+<div id="shop" class="container hidden">
+    <h2>Shop</h2>
+    <ul id="shop-items"></ul>
+</div>
+
+<!-- Inventory Section -->
+<div id="inventory" class="container hidden">
+    <h2>Your Inventory</h2>
+    <ul id="inventory-list"></ul>
+</div>
+
+<!-- Trade Section -->
+<div id="trade" class="container hidden">
+    <h2>Trade Items</h2>
+    <form onsubmit="handleTrade(event)">
+        <label for="trade-with">Trade with (Username):</label>
+        <input type="text" id="trade-with" required>
+
+        <label for="trade-item">Item to Trade:</label>
+        <input type="text" id="trade-item" required>
+
+        <label for="trade-quantity">Quantity:</label>
+        <input type="number" id="trade-quantity" required>
+
+        <button type="submit">Request Trade</button>
+    </form>
+    <div id="trade-messages"></div>
+</div>
+
 
 <div id="signup" class="container">
     <h2>Sign Up</h2>
@@ -244,6 +279,105 @@
             populateAccountList();
         }
     }
+
+    const shopItems = [
+    { item: "Sword", price: 50 },
+    { item: "Shield", price: 75 },
+    { item: "Health Potion", price: 25 }
+];
+
+// Add inventory to each user
+accounts.users.forEach(user => user.inventory = []);
+accounts.admins.forEach(admin => admin.inventory = []);
+accounts.owner.inventory = [];
+
+// Populate shop items
+function populateShop() {
+    const shopList = document.getElementById("shop-items");
+    shopList.innerHTML = '';
+    shopItems.forEach(({ item, price }) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            ${item} - $${price}
+            <button onclick="purchaseItem('${item}', ${price})">Buy</button>
+        `;
+        shopList.appendChild(li);
+    });
+}
+
+// Purchase items from the shop
+function purchaseItem(item, price) {
+    if (currentUser.balance >= price) {
+        currentUser.balance -= price;
+        const existingItem = currentUser.inventory.find(inv => inv.item === item);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            currentUser.inventory.push({ item, quantity: 1 });
+        }
+        saveData();
+        alert(`You purchased a ${item}!`);
+        updateUserInfo();
+    } else {
+        alert("Insufficient balance!");
+    }
+}
+
+// Populate inventory
+function populateInventory() {
+    const inventoryList = document.getElementById("inventory-list");
+    inventoryList.innerHTML = '';
+    currentUser.inventory.forEach(({ item, quantity }) => {
+        const li = document.createElement("li");
+        li.textContent = `${item} - Quantity: ${quantity}`;
+        inventoryList.appendChild(li);
+    });
+}
+
+// Handle trade requests
+function handleTrade(event) {
+    event.preventDefault();
+    const tradeWith = document.getElementById("trade-with").value;
+    const tradeItem = document.getElementById("trade-item").value;
+    const tradeQuantity = parseInt(document.getElementById("trade-quantity").value);
+
+    const allAccounts = [accounts.owner, ...accounts.admins, ...accounts.users];
+    const recipient = allAccounts.find(acc => acc.username === tradeWith);
+
+    if (!recipient) {
+        alert("Recipient not found!");
+        return;
+    }
+
+    const userItem = currentUser.inventory.find(inv => inv.item === tradeItem);
+    if (!userItem || userItem.quantity < tradeQuantity) {
+        alert("You don't have enough of this item to trade!");
+        return;
+    }
+
+    // Perform the trade
+    userItem.quantity -= tradeQuantity;
+    if (userItem.quantity === 0) {
+        currentUser.inventory = currentUser.inventory.filter(inv => inv.item !== tradeItem);
+    }
+
+    const recipientItem = recipient.inventory.find(inv => inv.item === tradeItem);
+    if (recipientItem) {
+        recipientItem.quantity += tradeQuantity;
+    } else {
+        recipient.inventory.push({ item: tradeItem, quantity: tradeQuantity });
+    }
+
+    saveData();
+    alert(`Successfully traded ${tradeQuantity} ${tradeItem}(s) with ${tradeWith}.`);
+    populateInventory();
+}
+
+window.onload = function () {
+    loadData();
+    populateAccountList();
+    populateShop();
+}; 
 
     function handleSignup(event) {
         event.preventDefault();
