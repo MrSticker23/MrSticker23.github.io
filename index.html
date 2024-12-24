@@ -1,59 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Website</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            text-align: center;
-            position: relative;
-        }
-        header .user-info {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            text-align: right;
-        }
-        header .user-info p {
-            margin: 0;
-            color: #fff;
-        }
-        .tabs {
-            display: flex;
-            background-color: #ddd;
-            padding: 10px;
-        }
-        .tabs button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: #f4f4f4;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .tabs button.active {
-            background: #333;
-            color: #fff;
-        }
-        .container {
-            padding: 20px;
-        }
-        .section {
-            display: none;
-        }
-        .section.active {
-            display: block;
-        }
+<}
         .shop {
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -82,6 +28,15 @@
         .shop-item button:hover {
             background-color: #555;
         }
+        .chat-display {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #fff;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -109,17 +64,17 @@
             <p id="authToggleText">Don't have an account? <a href="#" onclick="toggleAuthMode()">Sign Up</a></p>
         </div>
 
-        <div class="chatroom active" id="chatroom">
-    <h2>Chatroom</h2>
-    <div class="chat-display" id="chatDisplay" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; background-color: #fff;">
-        <!-- Messages will be dynamically loaded here -->
-    </div>
-    <div class="chat-input">
-        <input type="text" id="username" placeholder="Your Username" disabled>
-        <input type="text" id="message" placeholder="Type a message">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-</div>
+        <!-- Chatroom Section -->
+        <div class="section chatroom active" id="chatroom">
+            <h2>Chatroom</h2>
+            <div class="chat-display" id="chatDisplay"></div>
+            <div class="chat-input">
+                <input type="text" id="username" placeholder="Your Username" disabled>
+                <input type="text" id="message" placeholder="Type a message">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
         <!-- Inventory Section -->
         <div class="section inventory" id="inventory">
             <h2>Your Inventory</h2>
@@ -129,17 +84,12 @@
         </div>
 
         <!-- Inbox Section -->
-<div class="section inbox" id="inbox">
-    <h2>Trade Offers</h2>
-    <ul id="tradeInbox">
-        <!-- Dynamically populated -->
-    </ul>
-
-    <h3>Send a Trade</h3>
-    <input type="text" id="targetUser" placeholder="Target Username">
-    <input type="text" id="tradeItem" placeholder="Item to Trade">
-    <button onclick="sendTradeRequest()">Send Trade</button>
-</div>
+        <div class="section inbox" id="inbox">
+            <h2>Trade Offers</h2>
+            <ul id="tradeInbox">
+                <!-- Dynamically populated -->
+            </ul>
+        </div>
 
         <!-- Shop Section -->
         <div class="section shop" id="shop">
@@ -186,49 +136,6 @@
                 alert('Please fill in both fields.');
                 return;
             }
-
-            // Chatroom messages stored in localStorage
-const messages = JSON.parse(localStorage.getItem('messages')) || [];
-
-// Function to send a message
-function sendMessage() {
-    const username = document.getElementById('username').value;
-    const messageContent = document.getElementById('message').value;
-
-    if (!username || !messageContent) {
-        alert('Both username and message are required.');
-        return;
-    }
-
-    // Create a message object
-    const message = { username, content: messageContent, timestamp: new Date().toLocaleTimeString() };
-    messages.push(message);
-
-    // Save the messages to localStorage
-    localStorage.setItem('messages', JSON.stringify(messages));
-
-    // Clear the input field and refresh the chat display
-    document.getElementById('message').value = '';
-    loadChatMessages();
-}
-
-// Function to load chat messages
-function loadChatMessages() {
-    const chatDisplay = document.getElementById('chatDisplay');
-    chatDisplay.innerHTML = messages.map(msg => {
-        return `<p><strong>${msg.username}</strong>: ${msg.content} <span style="font-size: 0.8em; color: gray;">(${msg.timestamp})</span></p>`;
-    }).join('');
-}
-
-// Initialize the chatroom on page load
-window.onload = function () {
-    const savedUser = document.getElementById('username').value;
-    if (savedUser && users[savedUser]) {
-        showMainContent(savedUser);
-    }
-    loadChatMessages(); // Load chat messages on page load
-};
-
 
             if (authButton.textContent === 'Sign Up') {
                 if (users[username]) {
@@ -308,7 +215,10 @@ window.onload = function () {
 
         function buyItem(itemName, itemPrice) {
             const username = document.getElementById('username').value;
-            if (!username) return;
+            if (!username) {
+                alert('Please log in to purchase items.');
+                return;
+            }
 
             const user = users[username];
             if (user.currency >= itemPrice) {
@@ -321,6 +231,22 @@ window.onload = function () {
                 alert('Not enough currency!');
             }
             localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function sendMessage() {
+            const username = document.getElementById('username').value;
+            const message = document.getElementById('message').value;
+            const chatDisplay = document.getElementById('chatDisplay');
+
+            if (!username || !message) {
+                alert('Please log in and type a message to send.');
+                return;
+            }
+
+            const chatMessage = document.createElement('p');
+            chatMessage.textContent = `${username}: ${message}`;
+            chatDisplay.appendChild(chatMessage);
+            document.getElementById('message').value = '';
         }
 
         function addItem() {
@@ -341,72 +267,6 @@ window.onload = function () {
                 return `<p>${user} (${users[user].role}) - Balance: ${users[user].currency}</p>`;
             }).join('');
         }
-
-        // Send a Trade Request
-function sendTradeRequest() {
-    const sender = document.getElementById('username').value;
-    const receiver = document.getElementById('targetUser').value;
-    const tradeItem = document.getElementById('tradeItem').value;
-
-    if (!sender || !receiver || !tradeItem) {
-        alert('Please fill out all trade fields.');
-        return;
-    }
-
-    if (!users[receiver]) {
-        alert('Target user does not exist.');
-        return;
-    }
-
-    const tradeRequest = { sender, receiver, item: tradeItem };
-    if (!users[receiver].tradeInbox) {
-        users[receiver].tradeInbox = [];
-    }
-    users[receiver].tradeInbox.push(tradeRequest);
-    alert(`Trade request sent to ${receiver}`);
-    localStorage.setItem('users', JSON.stringify(users));
-
-    // Clear the input fields
-    document.getElementById('targetUser').value = '';
-    document.getElementById('tradeItem').value = '';
-}
-
-// Load Trade Requests
-function loadTradeInbox(username) {
-    const tradeInbox = document.getElementById('tradeInbox');
-    const userTrades = users[username].tradeInbox || [];
-    tradeInbox.innerHTML = userTrades.map((trade, index) => {
-        return `<li>
-            ${trade.sender} wants to trade ${trade.item}
-            <button onclick="acceptTrade('${username}', ${index})">Accept</button>
-            <button onclick="rejectTrade('${username}', ${index})">Reject</button>
-        </li>`;
-    }).join('');
-}
-
-// Accept a Trade Request
-function acceptTrade(username, tradeIndex) {
-    const userTrades = users[username].tradeInbox || [];
-    const trade = userTrades[tradeIndex];
-    if (!trade) return;
-
-    users[username].inventory.push(trade.item);
-    userTrades.splice(tradeIndex, 1);
-    alert(`Trade accepted: ${trade.item} added to your inventory.`);
-    localStorage.setItem('users', JSON.stringify(users));
-    loadInventory(username);
-    loadTradeInbox(username);
-}
-
-// Reject a Trade Request
-function rejectTrade(username, tradeIndex) {
-    const userTrades = users[username].tradeInbox || [];
-    userTrades.splice(tradeIndex, 1);
-    alert('Trade rejected.');
-    localStorage.setItem('users', JSON.stringify(users));
-    loadTradeInbox(username);
-}
-
 
         function addCurrency() {
             const targetUser = document.getElementById('targetUser').value;
@@ -436,3 +296,60 @@ function rejectTrade(username, tradeIndex) {
     </script>
 </body>
 </html>
+html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+            position: relative;
+        }
+        header .user-info {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            text-align: right;
+        }
+        header .user-info p {
+            margin: 0;
+            color: #fff;
+        }
+        .tabs {
+            display: flex;
+            background-color: #ddd;
+            padding: 10px;
+        }
+        .tabs button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #f4f4f4;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .tabs button.active {
+            background: #333;
+            color: #fff;
+        }
+        .container {
+            padding: 20px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        
+
+        
