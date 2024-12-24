@@ -109,17 +109,17 @@
             <p id="authToggleText">Don't have an account? <a href="#" onclick="toggleAuthMode()">Sign Up</a></p>
         </div>
 
-        <!-- Chatroom Section -->
-        <div class="section chatroom active" id="chatroom">
-            <h2>Chatroom</h2>
-            <div class="chat-display" id="chatDisplay"></div>
-            <div class="chat-input">
-                <input type="text" id="username" placeholder="Your Username" disabled>
-                <input type="text" id="message" placeholder="Type a message">
-                <button onclick="sendMessage()">Send</button>
-            </div>
-        </div>
-
+        <div class="chatroom active" id="chatroom">
+    <h2>Chatroom</h2>
+    <div class="chat-display" id="chatDisplay" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; background-color: #fff;">
+        <!-- Messages will be dynamically loaded here -->
+    </div>
+    <div class="chat-input">
+        <input type="text" id="username" placeholder="Your Username" disabled>
+        <input type="text" id="message" placeholder="Type a message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
         <!-- Inventory Section -->
         <div class="section inventory" id="inventory">
             <h2>Your Inventory</h2>
