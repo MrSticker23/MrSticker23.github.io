@@ -299,6 +299,72 @@
             }).join('');
         }
 
+        // Send a Trade Request
+function sendTradeRequest() {
+    const sender = document.getElementById('username').value;
+    const receiver = document.getElementById('targetUser').value;
+    const tradeItem = document.getElementById('tradeItem').value;
+
+    if (!sender || !receiver || !tradeItem) {
+        alert('Please fill out all trade fields.');
+        return;
+    }
+
+    if (!users[receiver]) {
+        alert('Target user does not exist.');
+        return;
+    }
+
+    const tradeRequest = { sender, receiver, item: tradeItem };
+    if (!users[receiver].tradeInbox) {
+        users[receiver].tradeInbox = [];
+    }
+    users[receiver].tradeInbox.push(tradeRequest);
+    alert(`Trade request sent to ${receiver}`);
+    localStorage.setItem('users', JSON.stringify(users));
+
+    // Clear the input fields
+    document.getElementById('targetUser').value = '';
+    document.getElementById('tradeItem').value = '';
+}
+
+// Load Trade Requests
+function loadTradeInbox(username) {
+    const tradeInbox = document.getElementById('tradeInbox');
+    const userTrades = users[username].tradeInbox || [];
+    tradeInbox.innerHTML = userTrades.map((trade, index) => {
+        return `<li>
+            ${trade.sender} wants to trade ${trade.item}
+            <button onclick="acceptTrade('${username}', ${index})">Accept</button>
+            <button onclick="rejectTrade('${username}', ${index})">Reject</button>
+        </li>`;
+    }).join('');
+}
+
+// Accept a Trade Request
+function acceptTrade(username, tradeIndex) {
+    const userTrades = users[username].tradeInbox || [];
+    const trade = userTrades[tradeIndex];
+    if (!trade) return;
+
+    users[username].inventory.push(trade.item);
+    userTrades.splice(tradeIndex, 1);
+    alert(`Trade accepted: ${trade.item} added to your inventory.`);
+    localStorage.setItem('users', JSON.stringify(users));
+    loadInventory(username);
+    loadTradeInbox(username);
+}
+
+// Reject a Trade Request
+function rejectTrade(username, tradeIndex) {
+    const userTrades = users[username].tradeInbox || [];
+    userTrades.splice(tradeIndex, 1);
+    alert('Trade rejected.');
+    localStorage.setItem('users', JSON.stringify(users));
+    loadTradeInbox(username);
+}
+
+
         function addCurrency() {
             const targetUser = document.getElementById('targetUser').value;
             const currencyAmount = parseInt(document.getElementById('currencyAmount').value);
