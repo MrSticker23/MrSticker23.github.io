@@ -129,12 +129,17 @@
         </div>
 
         <!-- Inbox Section -->
-        <div class="section inbox" id="inbox">
-            <h2>Trade Offers</h2>
-            <ul id="tradeInbox">
-                <!-- Dynamically populated -->
-            </ul>
-        </div>
+<div class="section inbox" id="inbox">
+    <h2>Trade Offers</h2>
+    <ul id="tradeInbox">
+        <!-- Dynamically populated -->
+    </ul>
+
+    <h3>Send a Trade</h3>
+    <input type="text" id="targetUser" placeholder="Target Username">
+    <input type="text" id="tradeItem" placeholder="Item to Trade">
+    <button onclick="sendTradeRequest()">Send Trade</button>
+</div>
 
         <!-- Shop Section -->
         <div class="section shop" id="shop">
