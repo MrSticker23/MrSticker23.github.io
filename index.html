@@ -280,14 +280,22 @@
     }
 
     function showSection(sectionId) {
-        const sections = document.querySelectorAll('.container');
-        sections.forEach(section => section.classList.add('hidden'));
-        document.getElementById(sectionId).classList.remove('hidden');
+    const sections = document.querySelectorAll('.container');
+    sections.forEach(section => section.classList.add('hidden'));
+    document.getElementById(sectionId).classList.remove('hidden');
 
-        if (sectionId === 'moderation') {
-            populateAccountList();
+    if (sectionId === 'trade') {
+        const tradeWith = document.getElementById("trade-with").value;
+        if (tradeWith) {
+            populateOtherPlayerInventory(tradeWith); // Populate other player's inventory when trade section is shown
+            populateTradeItems(); // Populate current user's items
         }
     }
+
+    if (sectionId === 'moderation') {
+        populateAccountList();
+    }
+}
 
     const shopItems = [
     { item: "Sword", price: 50 },
