@@ -211,21 +211,20 @@
     </footer>
 
     <script>
-        // Simulated data storage
-const users = [
+       const users = [
     { username: "Owner", password: "ownerpass", role: "owner", coins: 1000, gems: 100, inventory: [] },
-    { username: "Admin1", password: "admin1pass", role: "admin", coins: 500, gems: 50, inventory: [] },
-    { username: "Admin2", password: "admin2pass", role: "admin", coins: 300, gems: 30, inventory: [] }
 ];
-const items = [];
+const items = JSON.parse(localStorage.getItem('shopItems')) || [];
 
-// Utility functions
+let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser')) || null;
+
 function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
+    if (tabId === 'shop') updateShop();
+    if (tabId === 'inventory') updateInventory();
+    if (tabId === 'owner-panel') populateUserList();
 }
-
-let loggedInUser = null;
 
 function login() {
     const username = document.getElementById('login-username').value;
@@ -233,17 +232,23 @@ function login() {
     const user = users.find(u => u.username === username && u.password === password);
     if (user) {
         loggedInUser = user;
-        document.getElementById('username').textContent = user.username;
-        document.getElementById('coins').textContent = `Coins: ${user.coins}`;
-        document.getElementById('gems').textContent = `Gems: ${user.gems}`;
-        if (user.role === 'owner') {
-            document.getElementById('owner-tab').classList.remove('hidden');
-        }
-        updateInventory();
+        localStorage.setItem('loggedInUser', JSON.stringify(user));
+        updateUserInfo();
         showTab('chatroom');
+        if (user.role === 'owner') document.getElementById('owner-tab').classList.remove('hidden');
     } else {
         alert('Invalid login!');
     }
+}
+
+function logout() {
+    loggedInUser = null;
+    localStorage.removeItem('loggedInUser');
+    document.getElementById('username').textContent = "Guest";
+    document.getElementById('coins').textContent = "Coins: 0";
+    document.getElementById('gems').textContent = "Gems: 0";
+    document.getElementById('owner-tab').classList.add('hidden');
+    showTab('auth');
 }
 
 function signup() {
@@ -263,7 +268,8 @@ function addItemToShop() {
     const gemPrice = Number(document.getElementById('item-gem-price').value);
     if (name && (price > 0 || gemPrice > 0)) {
         items.push({ name, price, gemPrice });
-        alert('Item added to the shop!');
+        localStorage.setItem('shopItems', JSON.stringify(items));
+        alert('Item added!');
         updateShop();
     } else {
         alert('Invalid item details!');
@@ -300,8 +306,8 @@ function buyItem(index) {
         }
         loggedInUser.inventory.push(item.name);
         alert(`You purchased ${item.name}!`);
-        document.getElementById('coins').textContent = `Coins: ${loggedInUser.coins}`;
-        document.getElementById('gems').textContent = `Gems: ${loggedInUser.gems}`;
+        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+        updateUserInfo();
         updateInventory();
     } else {
         alert('Insufficient funds!');
@@ -321,6 +327,12 @@ function updateInventory() {
     } else {
         inventoryContainer.textContent = 'Your inventory is empty!';
     }
+}
+
+function updateUserInfo() {
+    document.getElementById('username').textContent = loggedInUser.username;
+    document.getElementById('coins').textContent = `Coins: ${loggedInUser.coins}`;
+    document.getElementById('gems').textContent = `Gems: ${loggedInUser.gems}`;
 }
 
 function populateUserList() {
@@ -355,9 +367,8 @@ function addItemToUser(username) {
     }
 }
 
-// Initial setup
-updateShop();
-populateUserList();
+if (loggedInUser) updateUserInfo();
+showTab('auth');
 
     </script>
 </body>
