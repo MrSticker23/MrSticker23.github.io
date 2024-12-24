@@ -16,97 +16,70 @@
             color: #fff;
             padding: 10px 20px;
             text-align: center;
+            position: relative;
+        }
+        header .user-info {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            text-align: right;
+        }
+        header .user-info p {
+            margin: 0;
+            color: #fff;
+        }
+        .tabs {
+            display: flex;
+            background-color: #ddd;
+            padding: 10px;
+        }
+        .tabs button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #f4f4f4;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .tabs button.active {
+            background: #333;
+            color: #fff;
         }
         .container {
             padding: 20px;
         }
-        .chatroom {
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .shop {
             border: 1px solid #ccc;
             border-radius: 5px;
             background: #fff;
             padding: 15px;
             margin-bottom: 20px;
         }
-        .chat-display {
-            height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 10px;
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             background: #f9f9f9;
         }
-        .chat-input {
-            display: flex;
-            gap: 10px;
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .chat-input button {
-            padding: 10px 15px;
+        .shop-item button {
+            padding: 5px 10px;
             background-color: #333;
             color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        .chat-input button:hover {
-            background-color: #555;
-        }
-        .auth-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: #fff;
-        }
-        .auth-section input {
-            display: block;
-            margin: 10px 0;
-            padding: 10px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .auth-section button {
-            padding: 10px 15px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .auth-section button:hover {
-            background-color: #555;
-        }
-        .moderation-panel {
-            display: none;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: #fff;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .moderation-panel input {
-            margin: 10px 0;
-            padding: 10px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .moderation-panel button {
-            padding: 10px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .moderation-panel button:hover {
+        .shop-item button:hover {
             background-color: #555;
         }
     </style>
@@ -114,7 +87,17 @@
 <body>
     <header>
         <h1>Trade Website</h1>
+        <div class="user-info" id="userInfo">
+            <!-- User info dynamically populated -->
+        </div>
     </header>
+
+    <div class="tabs">
+        <button onclick="switchTab('chatroom')" class="active">Chatroom</button>
+        <button onclick="switchTab('inventory')">Inventory</button>
+        <button onclick="switchTab('inbox')">Inbox</button>
+        <button onclick="switchTab('shop')">Shop</button>
+    </div>
 
     <div class="container">
         <!-- Authentication Section -->
@@ -127,7 +110,7 @@
         </div>
 
         <!-- Chatroom Section -->
-        <div class="chatroom" id="chatroom" style="display: none;">
+        <div class="section chatroom active" id="chatroom">
             <h2>Chatroom</h2>
             <div class="chat-display" id="chatDisplay"></div>
             <div class="chat-input">
@@ -138,7 +121,7 @@
         </div>
 
         <!-- Inventory Section -->
-        <div class="inventory" id="inventory" style="display: none;">
+        <div class="section inventory" id="inventory">
             <h2>Your Inventory</h2>
             <ul id="inventoryList">
                 <!-- Dynamically populated -->
@@ -146,11 +129,19 @@
         </div>
 
         <!-- Inbox Section -->
-        <div class="inbox" id="inbox" style="display: none;">
+        <div class="section inbox" id="inbox">
             <h2>Trade Offers</h2>
             <ul id="tradeInbox">
                 <!-- Dynamically populated -->
             </ul>
+        </div>
+
+        <!-- Shop Section -->
+        <div class="section shop" id="shop">
+            <h2>Shop</h2>
+            <div id="shopItems">
+                <!-- Dynamically populated -->
+            </div>
         </div>
 
         <!-- Moderation Panel -->
@@ -172,7 +163,7 @@
             "admin2": { password: "adminpass2", role: "admin", currency: 500, inventory: [] },
             "admin3": { password: "adminpass3", role: "admin", currency: 500, inventory: [] },
         };
-        const predefinedItems = ["Sword", "Shield", "Potion"];
+        const predefinedItems = ["Owner's Chain", "Dev Chain", "Starter Chain"];
 
         function handleAuth() {
             const username = document.getElementById('authUsername').value;
@@ -222,43 +213,59 @@
 
         function showMainContent(username) {
             document.getElementById('authSection').style.display = 'none';
-            document.getElementById('chatroom').style.display = 'block';
-            document.getElementById('inventory').style.display = 'block';
-            document.getElementById('inbox').style.display = 'block';
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById('chatroom').classList.add('active');
 
             if (users[username].role === 'owner') {
                 document.getElementById('moderationPanel').style.display = 'block';
             }
 
             loadInventory(username);
+            updateUserInfo(username);
+            loadShop();
         }
 
-        // Temporary memory for chat messages
-        const chatMessages = [];
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tabs button').forEach(button => button.classList.remove('active'));
+            document.querySelector(`.tabs button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+        }
 
-        function sendMessage() {
-            const username = document.getElementById('username').value;
-            const message = document.getElementById('message').value;
-
-            if (username && message) {
-                const fullMessage = `${username}: ${message}`;
-                chatMessages.push(fullMessage);
-
-                // Update chat display
-                const chatDisplay = document.getElementById('chatDisplay');
-                chatDisplay.innerHTML = chatMessages.map(msg => `<div>${msg}</div>`).join('');
-                chatDisplay.scrollTop = chatDisplay.scrollHeight;
-
-                // Clear input
-                document.getElementById('message').value = '';
-            } else {
-                alert('Please enter both username and message.');
-            }
+        function updateUserInfo(username) {
+            const userInfo = document.getElementById('userInfo');
+            userInfo.innerHTML = `<p>${username} (${users[username].role})</p><p>Balance: ${users[username].currency}</p>`;
         }
 
         function loadInventory(username) {
             const inventoryList = document.getElementById('inventoryList');
             inventoryList.innerHTML = users[username].inventory.map(item => `<li>${item}</li>`).join('');
+        }
+
+        function loadShop() {
+            const shopItems = document.getElementById('shopItems');
+            shopItems.innerHTML = predefinedItems.map(item => {
+                return `<div class="shop-item">
+                            <span>${item}</span>
+                            <button onclick="buyItem('${item}')">Buy</button>
+                        </div>`;
+            }).join('');
+        }
+
+        function buyItem(item) {
+            const username = document.getElementById('username').value;
+            if (!username) return;
+
+            const user = users[username];
+            if (user.currency >= 100) { // Assume each item costs 100 currency
+                user.currency -= 100;
+                user.inventory.push(item);
+                alert(`You bought ${item}!`);
+                loadInventory(username);
+                updateUserInfo(username);
+            } else {
+                alert('Not enough currency!');
+            }
         }
 
         function addItem() {
@@ -267,6 +274,7 @@
                 predefinedItems.push(newItem);
                 alert(`${newItem} added to items.`);
                 document.getElementById('newItem').value = '';
+                loadShop();
             } else {
                 alert('Please enter an item name.');
             }
@@ -281,17 +289,11 @@
                 alert(`${currencyAmount} currency added to ${targetUser}.`);
                 document.getElementById('targetUser').value = '';
                 document.getElementById('currencyAmount').value = '';
+                updateUserInfo(targetUser);
             } else {
                 alert('Invalid username or amount.');
             }
         }
-
-        // Initial predefined items
-        function loadInitialItems() {
-            console.log("Available items:", predefinedItems);
-        }
-
-        loadInitialItems();
     </script>
 </body>
 </html>
