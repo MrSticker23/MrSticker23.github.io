@@ -187,6 +187,49 @@
                 return;
             }
 
+            // Chatroom messages stored in localStorage
+const messages = JSON.parse(localStorage.getItem('messages')) || [];
+
+// Function to send a message
+function sendMessage() {
+    const username = document.getElementById('username').value;
+    const messageContent = document.getElementById('message').value;
+
+    if (!username || !messageContent) {
+        alert('Both username and message are required.');
+        return;
+    }
+
+    // Create a message object
+    const message = { username, content: messageContent, timestamp: new Date().toLocaleTimeString() };
+    messages.push(message);
+
+    // Save the messages to localStorage
+    localStorage.setItem('messages', JSON.stringify(messages));
+
+    // Clear the input field and refresh the chat display
+    document.getElementById('message').value = '';
+    loadChatMessages();
+}
+
+// Function to load chat messages
+function loadChatMessages() {
+    const chatDisplay = document.getElementById('chatDisplay');
+    chatDisplay.innerHTML = messages.map(msg => {
+        return `<p><strong>${msg.username}</strong>: ${msg.content} <span style="font-size: 0.8em; color: gray;">(${msg.timestamp})</span></p>`;
+    }).join('');
+}
+
+// Initialize the chatroom on page load
+window.onload = function () {
+    const savedUser = document.getElementById('username').value;
+    if (savedUser && users[savedUser]) {
+        showMainContent(savedUser);
+    }
+    loadChatMessages(); // Load chat messages on page load
+};
+
+
             if (authButton.textContent === 'Sign Up') {
                 if (users[username]) {
                     alert('Username already exists.');
