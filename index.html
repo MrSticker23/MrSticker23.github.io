@@ -344,14 +344,52 @@ function populateInventory() {
 }
 
 // Handle trade requests
+// Show the current user's items in the trade selection dropdown
+function populateTradeItems() {
+    const tradeItemSelect = document.getElementById("trade-item");
+    tradeItemSelect.innerHTML = ''; // Clear the current options
+    currentUser.inventory.forEach(({ item, quantity }) => {
+        const option = document.createElement("option");
+        option.value = item;
+        option.textContent = `${item} (x${quantity})`;
+        tradeItemSelect.appendChild(option);
+    });
+}
+
+// Show the other player's inventory in the trade section
+function populateOtherPlayerInventory(playerUsername) {
+    const otherPlayer = findPlayerByUsername(playerUsername);
+
+    if (!otherPlayer) {
+        alert("Player not found!");
+        return;
+    }
+
+    const otherPlayerInventoryList = document.getElementById("other-player-inventory");
+    otherPlayerInventoryList.innerHTML = ''; // Clear the list
+
+    otherPlayer.inventory.forEach(({ item, quantity }) => {
+        const li = document.createElement("li");
+        li.textContent = `${item} - Quantity: ${quantity}`;
+        otherPlayerInventoryList.appendChild(li);
+    });
+}
+
+// Find a player by username
+function findPlayerByUsername(username) {
+    const allPlayers = [accounts.owner, ...accounts.admins, ...accounts.users];
+    return allPlayers.find(player => player.username === username);
+}
+
+// Handle trade request
 function handleTrade(event) {
     event.preventDefault();
+
     const tradeWith = document.getElementById("trade-with").value;
     const tradeItem = document.getElementById("trade-item").value;
     const tradeQuantity = parseInt(document.getElementById("trade-quantity").value);
 
-    const allAccounts = [accounts.owner, ...accounts.admins, ...accounts.users];
-    const recipient = allAccounts.find(acc => acc.username === tradeWith);
+    const recipient = findPlayerByUsername(tradeWith);
 
     if (!recipient) {
         alert("Recipient not found!");
@@ -380,6 +418,14 @@ function handleTrade(event) {
     saveData();
     alert(`Successfully traded ${tradeQuantity} ${tradeItem}(s) with ${tradeWith}.`);
     populateInventory();
+    populateTradeItems(); // Update trade items after the trade
+}
+
+// Call this function when the user selects a player to trade with
+function initiateTrade() {
+    const tradeWith = document.getElementById("trade-with").value;
+    populateOtherPlayerInventory(tradeWith);
+    populateTradeItems(); // Show current user's items for trading
 }
 
 window.onload = function () {
