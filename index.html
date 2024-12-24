@@ -87,12 +87,13 @@
 <body>
     <header>
         <h1>Trade Website</h1>
-        <div class="user-info" id="userInfo"></div>
+        <div class="user-info" id="userInfo">
+            <!-- User info dynamically populated -->
+        </div>
     </header>
 
     <div class="tabs">
-        <button onclick="switchTab('auth')" class="active">Auth</button>
-        <button onclick="switchTab('chatroom')">Chatroom</button>
+        <button onclick="switchTab('chatroom')" class="active">Chatroom</button>
         <button onclick="switchTab('inventory')">Inventory</button>
         <button onclick="switchTab('inbox')">Inbox</button>
         <button onclick="switchTab('shop')">Shop</button>
@@ -100,15 +101,16 @@
 
     <div class="container">
         <!-- Authentication Section -->
-        <div class="section auth active" id="auth">
-            <h2 id="authTitle">Sign Up / Log In</h2>
+        <div class="auth-section" id="authSection">
+            <h2>Authentication</h2>
             <input type="text" id="authUsername" placeholder="Username">
             <input type="password" id="authPassword" placeholder="Password">
-            <button onclick="handleAuth()">Submit</button>
+            <button onclick="handleAuth()" id="authButton">Log In</button>
+            <p id="authToggleText">Don't have an account? <a href="#" onclick="toggleAuthMode()">Sign Up</a></p>
         </div>
 
         <!-- Chatroom Section -->
-        <div class="section chatroom" id="chatroom">
+        <div class="section chatroom active" id="chatroom">
             <h2>Chatroom</h2>
             <div class="chat-display" id="chatDisplay"></div>
             <div class="chat-input">
@@ -121,26 +123,35 @@
         <!-- Inventory Section -->
         <div class="section inventory" id="inventory">
             <h2>Your Inventory</h2>
-            <ul id="inventoryList"></ul>
+            <ul id="inventoryList">
+                <!-- Dynamically populated -->
+            </ul>
         </div>
 
         <!-- Inbox Section -->
         <div class="section inbox" id="inbox">
             <h2>Trade Offers</h2>
-            <ul id="tradeInbox"></ul>
+            <ul id="tradeInbox">
+                <!-- Dynamically populated -->
+            </ul>
         </div>
 
         <!-- Shop Section -->
         <div class="section shop" id="shop">
             <h2>Shop</h2>
-            <div id="shopItems"></div>
+            <div id="shopItems">
+                <!-- Dynamically populated -->
+            </div>
         </div>
 
         <!-- Moderation Panel -->
         <div class="moderation-panel" id="moderationPanel" style="display: none;">
             <h2>Moderation Panel</h2>
-            <h3>Users</h3>
-            <ul id="userList"></ul>
+            <div id="userList">
+                <!-- Dynamically populated -->
+            </div>
+            <input type="text" id="newItem" placeholder="Add New Item">
+            <button onclick="addItem()">Add Item</button>
             <input type="text" id="targetUser" placeholder="Target Username">
             <input type="number" id="currencyAmount" placeholder="Currency Amount">
             <button onclick="addCurrency()">Add Currency</button>
@@ -148,47 +159,71 @@
     </div>
 
     <script>
+        let isLoggedIn = false;
         const users = JSON.parse(localStorage.getItem('users')) || {
-            "owner": { password: "ownerpass", role: "owner", currency: 1000, inventory: [] }
+            "owner": { password: "ownerpass", role: "owner", currency: 1000, inventory: [] },
+            "admin1": { password: "adminpass1", role: "admin", currency: 500, inventory: [] },
+            "admin2": { password: "adminpass2", role: "admin", currency: 500, inventory: [] },
+            "admin3": { password: "adminpass3", role: "admin", currency: 500, inventory: [] },
         };
         const predefinedItems = [
-            { name: "Owner's Chain", price: 500 },
-            { name: "Dev Chain", price: 300 },
-            { name: "Starter Chain", price: 100 }
+            { name: "Owner's Chain", price: 100 },
+            { name: "Dev Chain", price: 150 },
+            { name: "Starter Chain", price: 50 }
         ];
 
         function handleAuth() {
             const username = document.getElementById('authUsername').value;
             const password = document.getElementById('authPassword').value;
+            const authButton = document.getElementById('authButton');
 
             if (!username || !password) {
                 alert('Please fill in both fields.');
                 return;
             }
 
-            if (users[username]) {
-                if (users[username].password === password) {
-                    alert('Login successful!');
-                    localStorage.setItem('loggedInUser', username);
-                    showMainContent(username);
+            if (authButton.textContent === 'Sign Up') {
+                if (users[username]) {
+                    alert('Username already exists.');
                 } else {
-                    alert('Incorrect password.');
+                    users[username] = { password, role: "user", currency: 100, inventory: [] };
+                    alert('Account created successfully! Please log in.');
+                    toggleAuthMode();
                 }
             } else {
-                users[username] = { password, role: "user", currency: 100, inventory: [] };
-                localStorage.setItem('users', JSON.stringify(users));
-                alert('Account created successfully!');
+                if (users[username] && users[username].password === password) {
+                    alert('Login successful!');
+                    isLoggedIn = true;
+                    document.getElementById('username').value = username;
+                    showMainContent(username);
+                } else {
+                    alert('Invalid username or password.');
+                }
+            }
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function toggleAuthMode() {
+            const authButton = document.getElementById('authButton');
+            const authToggleText = document.getElementById('authToggleText');
+
+            if (authButton.textContent === 'Sign Up') {
+                authButton.textContent = 'Log In';
+                authToggleText.innerHTML = "Don't have an account? <a href='#' onclick='toggleAuthMode()'>Sign Up</a>";
+            } else {
+                authButton.textContent = 'Sign Up';
+                authToggleText.innerHTML = "Already have an account? <a href='#' onclick='toggleAuthMode()'>Log In</a>";
             }
         }
 
         function showMainContent(username) {
-            document.getElementById('auth').style.display = 'none';
+            document.getElementById('authSection').style.display = 'none';
             document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
             document.getElementById('chatroom').classList.add('active');
 
             if (users[username].role === 'owner') {
                 document.getElementById('moderationPanel').style.display = 'block';
-                loadUsers();
+                loadUserList();
             }
 
             loadInventory(username);
@@ -217,14 +252,14 @@
             const shopItems = document.getElementById('shopItems');
             shopItems.innerHTML = predefinedItems.map(item => {
                 return `<div class="shop-item">
-                            <span>${item.name} - ${item.price} currency</span>
+                            <span>${item.name} - $${item.price}</span>
                             <button onclick="buyItem('${item.name}', ${item.price})">Buy</button>
                         </div>`;
             }).join('');
         }
 
         function buyItem(itemName, itemPrice) {
-            const username = localStorage.getItem('loggedInUser');
+            const username = document.getElementById('username').value;
             if (!username) return;
 
             const user = users[username];
@@ -232,17 +267,31 @@
                 user.currency -= itemPrice;
                 user.inventory.push(itemName);
                 alert(`You bought ${itemName}!`);
-                localStorage.setItem('users', JSON.stringify(users));
                 loadInventory(username);
                 updateUserInfo(username);
             } else {
                 alert('Not enough currency!');
             }
+            localStorage.setItem('users', JSON.stringify(users));
         }
 
-        function loadUsers() {
+        function addItem() {
+            const newItem = document.getElementById('newItem').value;
+            if (newItem) {
+                predefinedItems.push({ name: newItem, price: 100 });
+                alert(`${newItem} added to items.`);
+                document.getElementById('newItem').value = '';
+                loadShop();
+            } else {
+                alert('Please enter an item name.');
+            }
+        }
+
+        function loadUserList() {
             const userList = document.getElementById('userList');
-            userList.innerHTML = Object.keys(users).map(user => `<li>${user} (${users[user].role})</li>`).join('');
+            userList.innerHTML = Object.keys(users).map(user => {
+                return `<p>${user} (${users[user].role}) - Balance: ${users[user].currency}</p>`;
+            }).join('');
         }
 
         function addCurrency() {
@@ -251,13 +300,25 @@
 
             if (users[targetUser] && !isNaN(currencyAmount)) {
                 users[targetUser].currency += currencyAmount;
-                localStorage.setItem('users', JSON.stringify(users));
                 alert(`${currencyAmount} currency added to ${targetUser}.`);
-                updateUserInfo(targetUser);
+                document.getElementById('targetUser').value = '';
+                document.getElementById('currencyAmount').value = '';
+                loadUserList();
+                if (targetUser === document.getElementById('username').value) {
+                    updateUserInfo(targetUser);
+                }
             } else {
                 alert('Invalid username or amount.');
             }
+            localStorage.setItem('users', JSON.stringify(users));
         }
+
+        window.onload = function () {
+            const savedUser = document.getElementById('username').value;
+            if (savedUser && users[savedUser]) {
+                showMainContent(savedUser);
+            }
+        };
     </script>
 </body>
 </html>
