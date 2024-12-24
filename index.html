@@ -154,17 +154,26 @@
     <form onsubmit="handleTrade(event)">
         <label for="trade-with">Trade with (Username):</label>
         <input type="text" id="trade-with" required>
-
-        <label for="trade-item">Item to Trade:</label>
-        <input type="text" id="trade-item" required>
+        
+        <label for="trade-item">Your Item to Trade:</label>
+        <select id="trade-item" required>
+            <!-- Options will be dynamically populated -->
+        </select>
 
         <label for="trade-quantity">Quantity:</label>
         <input type="number" id="trade-quantity" required>
 
         <button type="submit">Request Trade</button>
     </form>
+
+    <h3>Other Player's Inventory</h3>
+    <ul id="other-player-inventory">
+        <!-- Other player's inventory will be displayed here -->
+    </ul>
+
     <div id="trade-messages"></div>
 </div>
+
 
 
 <div id="signup" class="container">
