@@ -3,549 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Classroom</title>
+    <title>Trade Website</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            background-color: #f4f4f4;
         }
-
         header {
-            background: #333;
+            background-color: #333;
             color: #fff;
             padding: 10px 20px;
             text-align: center;
-            position: relative;
         }
-
-        #user-info {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            color: #fff;
-            font-size: 16px;
-        }
-
-        nav {
-            text-align: center;
-            margin: 20px;
-        }
-
-        nav a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #333;
-            font-size: 18px;
-        }
-
         .container {
-            max-width: 600px;
-            margin: 50px auto;
             padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        input {
-            margin-bottom: 15px;
-            padding: 10px;
+        .chatroom {
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 5px;
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
         }
-
-        button {
-            background: #333;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background: #555;
-        }
-
-        .home-content {
-            text-align: center;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        #moderation-panel {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-
-        .account-list {
-            flex: 1;
+        .chat-display {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
             padding: 10px;
             background: #f9f9f9;
-            border-right: 1px solid #ccc;
         }
-
-        .account-list h3 {
-            text-align: center;
+        .chat-input {
+            display: flex;
+            gap: 10px;
         }
-
-        .edit-form {
-            flex: 2;
+        .chat-input input {
+            flex: 1;
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-
-        .edit-form label {
-            margin-top: 10px;
+        .chat-input button {
+            padding: 10px 15px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-
-        .edit-form button {
-            margin-top: 10px;
+        .chat-input button:hover {
+            background-color: #555;
+        }
+        .auth-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #fff;
+        }
+        .auth-section input {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .auth-section button {
+            padding: 10px 15px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .auth-section button:hover {
+            background-color: #555;
+        }
+        .moderation-panel {
+            display: none;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .moderation-panel input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .moderation-panel button {
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .moderation-panel button:hover {
+            background-color: #555;
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>Trade Website</h1>
+    </header>
 
-<header>
-    <h1>Sigma Sigma Sigma</h1>
-    <div id="user-info" class="hidden">Username: <span id="display-username"></span> | Balance: $<span id="display-balance"></span></div>
-</header>
-
-<nav>
-    <a href="#" onclick="showSection('signup')">Sign Up</a>
-    <a href="#" onclick="showSection('login')">Login</a>
-    <a href="#" onclick="showSection('home')">Home</a>
-    <a href="#" onclick="showSection('shop')">Shop</a>
-    <a href="#" onclick="showSection('inventory')">Inventory</a>
-    <a href="#" onclick="showSection('trade')">Trade</a>
-    <a href="#" onclick="showSection('moderation')" id="moderation-link" class="hidden">Moderation Panel</a>
-</nav>
-
-
-<!-- Shop Section -->
-<div id="shop" class="container hidden">
-    <h2>Shop</h2>
-    <ul id="shop-items"></ul>
-</div>
-
-<!-- Inventory Section -->
-<div id="inventory" class="container hidden">
-    <h2>Your Inventory</h2>
-    <ul id="inventory-list"></ul>
-</div>
-
-<!-- Trade Section -->
-<div id="trade" class="container hidden">
-    <h2>Trade Items</h2>
-    <form onsubmit="handleTrade(event)">
-        <label for="trade-with">Trade with (Username):</label>
-        <input type="text" id="trade-with" required>
-        
-        <label for="trade-item">Your Item to Trade:</label>
-        <select id="trade-item" required>
-            <!-- Options will be dynamically populated -->
-        </select>
-
-        <label for="trade-quantity">Quantity:</label>
-        <input type="number" id="trade-quantity" required>
-
-        <button type="submit">Request Trade</button>
-    </form>
-
-    <h3>Other Player's Inventory</h3>
-    <ul id="other-player-inventory">
-        <!-- Other player's inventory will be displayed here -->
-    </ul>
-
-    <div id="trade-messages"></div>
-</div>
-
-
-
-<div id="signup" class="container">
-    <h2>Sign Up</h2>
-    <form onsubmit="handleSignup(event)">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required>
-
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required>
-
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-
-        <button type="submit">Sign Up</button>
-    </form>
-</div>
-
-<div id="login" class="container hidden">
-    <h2>Login</h2>
-    <form onsubmit="handleLogin(event)">
-        <label for="login-username">Username</label>
-        <input type="text" id="login-username" name="login-username" required>
-
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" name="login-password" required>
-
-        <button type="submit">Login</button>
-    </form>
-</div>
-
-<div id="home" class="container hidden">
-    <div class="home-content">
-        <h2>Home Page</h2>
-        <p>Welcome to the home page! Use the navigation menu to sign up or log in.</p>
-    </div>
-</div>
-
-<div id="moderation" class="container hidden">
-    <h2>Moderation Panel</h2>
-    <div id="moderation-panel">
-        <div class="account-list">
-            <h3>Existing Accounts</h3>
-            <ul id="account-list"></ul>
+    <div class="container">
+        <!-- Authentication Section -->
+        <div class="auth-section" id="authSection">
+            <h2 id="authTitle">Sign Up</h2>
+            <input type="text" id="authUsername" placeholder="Username">
+            <input type="password" id="authPassword" placeholder="Password">
+            <button onclick="handleAuth()" id="authButton">Sign Up</button>
+            <p id="authToggleText">Already have an account? <a href="#" onclick="toggleAuthMode()">Log In</a></p>
         </div>
-        <div class="edit-form">
-            <h3>Edit Account Balance</h3>
-            <form onsubmit="handleEditBalance(event)">
-                <label for="edit-username">Username</label>
-                <input type="text" id="edit-username" required>
 
-                <label for="edit-balance">New Balance</label>
-                <input type="number" id="edit-balance" required>
+        <!-- Chatroom Section -->
+        <div class="chatroom" id="chatroom" style="display: none;">
+            <h2>Chatroom</h2>
+            <div class="chat-display" id="chatDisplay"></div>
+            <div class="chat-input">
+                <input type="text" id="username" placeholder="Your Username" disabled>
+                <input type="text" id="message" placeholder="Type a message">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
 
-                <button type="submit">Update Balance</button>
-            </form>
+        <!-- Inventory Section -->
+        <div class="inventory" id="inventory" style="display: none;">
+            <h2>Your Inventory</h2>
+            <ul id="inventoryList">
+                <!-- Dynamically populated -->
+            </ul>
+        </div>
 
-            <h3>Ban Account</h3>
-            <form onsubmit="handleBanAccount(event)">
-                <label for="ban-username">Username</label>
-                <input type="text" id="ban-username" required>
+        <!-- Inbox Section -->
+        <div class="inbox" id="inbox" style="display: none;">
+            <h2>Trade Offers</h2>
+            <ul id="tradeInbox">
+                <!-- Dynamically populated -->
+            </ul>
+        </div>
 
-                <button type="submit">Ban User</button>
-            </form>
+        <!-- Moderation Panel -->
+        <div class="moderation-panel" id="moderationPanel">
+            <h2>Moderation Panel</h2>
+            <input type="text" id="newItem" placeholder="Add New Item">
+            <button onclick="addItem()">Add Item</button>
+            <input type="text" id="targetUser" placeholder="Target Username">
+            <input type="number" id="currencyAmount" placeholder="Currency Amount">
+            <button onclick="addCurrency()">Add Currency</button>
         </div>
     </div>
-</div>
 
-<script>
-    const accountsKey = "accountsData";
-    const bansKey = "bannedAccounts";
+    <script>
+        let isLoggedIn = false;
+        const users = {
+            "owner": { password: "ownerpass", role: "owner", currency: 1000, inventory: [] },
+            "admin1": { password: "adminpass1", role: "admin", currency: 500, inventory: [] },
+            "admin2": { password: "adminpass2", role: "admin", currency: 500, inventory: [] },
+            "admin3": { password: "adminpass3", role: "admin", currency: 500, inventory: [] },
+        };
+        const predefinedItems = ["Sword", "Shield", "Potion"];
 
-    let accounts = {
-        owner: { username: "Owner", password: "ownerpass", role: "Owner", balance: 1000 },
-        admins: [
-            { username: "Admin1", password: "admin1pass", role: "Admin", balance: 500 },
-            { username: "Admin2", password: "admin2pass", role: "Admin", balance: 500 },
-            { username: "Admin3", password: "admin3pass", role: "Admin", balance: 500 }
-        ],
-        users: []
-    };
+        function handleAuth() {
+            const username = document.getElementById('authUsername').value;
+            const password = document.getElementById('authPassword').value;
+            const authButton = document.getElementById('authButton');
 
-    let bannedAccounts = [];
-    let currentUser = null;
+            if (!username || !password) {
+                alert('Please fill in both fields.');
+                return;
+            }
 
-    // Save accounts and bans to localStorage
-    function saveData() {
-        localStorage.setItem(accountsKey, JSON.stringify(accounts));
-        localStorage.setItem(bansKey, JSON.stringify(bannedAccounts));
-    }
-
-    // Load accounts and bans from localStorage
-    function loadData() {
-        const storedAccounts = localStorage.getItem(accountsKey);
-        const storedBans = localStorage.getItem(bansKey);
-
-        if (storedAccounts) {
-            accounts = JSON.parse(storedAccounts);
+            if (authButton.textContent === 'Sign Up') {
+                if (users[username]) {
+                    alert('Username already exists.');
+                } else {
+                    users[username] = { password, role: "user", currency: 100, inventory: [] };
+                    alert('Account created successfully! Please log in.');
+                    toggleAuthMode();
+                }
+            } else {
+                if (users[username] && users[username].password === password) {
+                    alert('Login successful!');
+                    isLoggedIn = true;
+                    document.getElementById('username').value = username;
+                    showMainContent(username);
+                } else {
+                    alert('Invalid username or password.');
+                }
+            }
         }
 
-        if (storedBans) {
-            bannedAccounts = JSON.parse(storedBans);
-        }
-    }
+        function toggleAuthMode() {
+            const authTitle = document.getElementById('authTitle');
+            const authButton = document.getElementById('authButton');
+            const authToggleText = document.getElementById('authToggleText');
 
-    function showSection(sectionId) {
-    const sections = document.querySelectorAll('.container');
-    sections.forEach(section => section.classList.add('hidden'));
-    document.getElementById(sectionId).classList.remove('hidden');
-
-    if (sectionId === 'trade') {
-        const tradeWith = document.getElementById("trade-with").value;
-        if (tradeWith) {
-            populateOtherPlayerInventory(tradeWith); // Populate other player's inventory when trade section is shown
-            populateTradeItems(); // Populate current user's items
-        }
-    }
-
-    if (sectionId === 'moderation') {
-        populateAccountList();
-    }
-}
-
-    const shopItems = [
-    { item: "Sword", price: 50 },
-    { item: "Shield", price: 75 },
-    { item: "Health Potion", price: 25 }
-];
-
-// Add inventory to each user
-accounts.users.forEach(user => user.inventory = []);
-accounts.admins.forEach(admin => admin.inventory = []);
-accounts.owner.inventory = [];
-
-// Populate shop items
-function populateShop() {
-    const shopList = document.getElementById("shop-items");
-    shopList.innerHTML = '';
-    shopItems.forEach(({ item, price }) => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-            ${item} - $${price}
-            <button onclick="purchaseItem('${item}', ${price})">Buy</button>
-        `;
-        shopList.appendChild(li);
-    });
-}
-
-// Purchase items from the shop
-function purchaseItem(item, price) {
-    if (currentUser.balance >= price) {
-        currentUser.balance -= price;
-        const existingItem = currentUser.inventory.find(inv => inv.item === item);
-        if (existingItem) {
-            existingItem.quantity++;
-        } else {
-            currentUser.inventory.push({ item, quantity: 1 });
-        }
-        saveData();
-        alert(`You purchased a ${item}!`);
-        updateUserInfo();
-    } else {
-        alert("Insufficient balance!");
-    }
-}
-
-// Populate inventory
-function populateInventory() {
-    const inventoryList = document.getElementById("inventory-list");
-    inventoryList.innerHTML = '';
-    currentUser.inventory.forEach(({ item, quantity }) => {
-        const li = document.createElement("li");
-        li.textContent = `${item} - Quantity: ${quantity}`;
-        inventoryList.appendChild(li);
-    });
-}
-
-// Handle trade requests
-// Show the current user's items in the trade selection dropdown
-function populateTradeItems() {
-    const tradeItemSelect = document.getElementById("trade-item");
-    tradeItemSelect.innerHTML = ''; // Clear the current options
-    currentUser.inventory.forEach(({ item, quantity }) => {
-        const option = document.createElement("option");
-        option.value = item;
-        option.textContent = `${item} (x${quantity})`;
-        tradeItemSelect.appendChild(option);
-    });
-}
-
-// Show the other player's inventory in the trade section
-function populateOtherPlayerInventory(playerUsername) {
-    const otherPlayer = findPlayerByUsername(playerUsername);
-
-    if (!otherPlayer) {
-        alert("Player not found!");
-        return;
-    }
-
-    const otherPlayerInventoryList = document.getElementById("other-player-inventory");
-    otherPlayerInventoryList.innerHTML = ''; // Clear the list
-
-    otherPlayer.inventory.forEach(({ item, quantity }) => {
-        const li = document.createElement("li");
-        li.textContent = `${item} - Quantity: ${quantity}`;
-        otherPlayerInventoryList.appendChild(li);
-    });
-}
-
-// Find a player by username
-function findPlayerByUsername(username) {
-    const allPlayers = [accounts.owner, ...accounts.admins, ...accounts.users];
-    return allPlayers.find(player => player.username === username);
-}
-
-// Handle trade request
-function handleTrade(event) {
-    event.preventDefault();
-
-    const tradeWith = document.getElementById("trade-with").value;
-    const tradeItem = document.getElementById("trade-item").value;
-    const tradeQuantity = parseInt(document.getElementById("trade-quantity").value);
-
-    const recipient = findPlayerByUsername(tradeWith);
-
-    if (!recipient) {
-        alert("Recipient not found!");
-        return;
-    }
-
-    const userItem = currentUser.inventory.find(inv => inv.item === tradeItem);
-    if (!userItem || userItem.quantity < tradeQuantity) {
-        alert("You don't have enough of this item to trade!");
-        return;
-    }
-
-    // Perform the trade
-    userItem.quantity -= tradeQuantity;
-    if (userItem.quantity === 0) {
-        currentUser.inventory = currentUser.inventory.filter(inv => inv.item !== tradeItem);
-    }
-
-    const recipientItem = recipient.inventory.find(inv => inv.item === tradeItem);
-    if (recipientItem) {
-        recipientItem.quantity += tradeQuantity;
-    } else {
-        recipient.inventory.push({ item: tradeItem, quantity: tradeQuantity });
-    }
-
-    saveData();
-    alert(`Successfully traded ${tradeQuantity} ${tradeItem}(s) with ${tradeWith}.`);
-    populateInventory();
-    populateTradeItems(); // Update trade items after the trade
-}
-
-// Call this function when the user selects a player to trade with
-function initiateTrade() {
-    const tradeWith = document.getElementById("trade-with").value;
-    populateOtherPlayerInventory(tradeWith);
-    populateTradeItems(); // Show current user's items for trading
-}
-
-window.onload = function () {
-    loadData();
-    populateAccountList();
-    populateShop();
-}; 
-
-    function handleSignup(event) {
-        event.preventDefault();
-        const username = document.getElementById('username').value;
-        const balance = 100; // Default starting balance
-        const newUser = { username, balance, role: "User" };
-        accounts.users.push(newUser);
-        saveData();
-        currentUser = newUser;
-        updateUserInfo();
-        showSection('home');
-    }
-
-    function handleLogin(event) {
-        event.preventDefault();
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-
-        if (bannedAccounts.includes(username)) {
-            alert("This account has been banned.");
-            return;
+            if (authButton.textContent === 'Sign Up') {
+                authTitle.textContent = 'Log In';
+                authButton.textContent = 'Log In';
+                authToggleText.innerHTML = 'Don\'t have an account? <a href="#" onclick="toggleAuthMode()">Sign Up</a>';
+            } else {
+                authTitle.textContent = 'Sign Up';
+                authButton.textContent = 'Sign Up';
+                authToggleText.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthMode()">Log In</a>';
+            }
         }
 
-        if (username === accounts.owner.username && password === accounts.owner.password) {
-            currentUser = accounts.owner;
-            document.getElementById('moderation-link').classList.remove('hidden');
-        } else {
-            currentUser = accounts.admins.find(
-                admin => admin.username === username && admin.password === password
-            );
+        function showMainContent(username) {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('chatroom').style.display = 'block';
+            document.getElementById('inventory').style.display = 'block';
+            document.getElementById('inbox').style.display = 'block';
+
+            if (users[username].role === 'owner') {
+                document.getElementById('moderationPanel').style.display = 'block';
+            }
+
+            loadInventory(username);
         }
 
-        if (!currentUser) {
-            currentUser = accounts.users.find(user => user.username === username);
+        // Temporary memory for chat messages
+        const chatMessages = [];
+
+        function sendMessage() {
+            const username = document.getElementById('username').value;
+            const message = document.getElementById('message').value;
+
+            if (username && message) {
+                const fullMessage = `${username}: ${message}`;
+                chatMessages.push(fullMessage);
+
+                // Update chat display
+                const chatDisplay = document.getElementById('chatDisplay');
+                chatDisplay.innerHTML = chatMessages.map(msg => `<div>${msg}</div>`).join('');
+                chatDisplay.scrollTop = chatDisplay.scrollHeight;
+
+                // Clear input
+                document.getElementById('message').value = '';
+            } else {
+                alert('Please enter both username and message.');
+            }
         }
 
-        if (currentUser) {
-            updateUserInfo();
-            showSection('home');
-        } else {
-            alert("Invalid username or password");
+        function loadInventory(username) {
+            const inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = users[username].inventory.map(item => `<li>${item}</li>`).join('');
         }
-    }
 
-    function updateUserInfo() {
-        if (currentUser) {
-            document.getElementById('display-username').textContent = `${currentUser.username} (${currentUser.role})`;
-            document.getElementById('display-balance').textContent = currentUser.balance;
-            document.getElementById('user-info').classList.remove('hidden');
+        function addItem() {
+            const newItem = document.getElementById('newItem').value;
+            if (newItem) {
+                predefinedItems.push(newItem);
+                alert(`${newItem} added to items.`);
+                document.getElementById('newItem').value = '';
+            } else {
+                alert('Please enter an item name.');
+            }
         }
-    }
 
-    function populateAccountList() {
-        const list = document.getElementById('account-list');
-        list.innerHTML = '';
+        function addCurrency() {
+            const targetUser = document.getElementById('targetUser').value;
+            const currencyAmount = parseInt(document.getElementById('currencyAmount').value);
 
-        const allAccounts = [accounts.owner, ...accounts.admins, ...accounts.users];
-        allAccounts.forEach(account => {
-            const li = document.createElement('li');
-            li.textContent = `${account.username} (${account.role}) - $${account.balance}`;
-            list.appendChild(li);
-        });
-    }
-
-    function handleEditBalance(event) {
-        event.preventDefault();
-        const username = document.getElementById('edit-username').value;
-        const newBalance = parseFloat(document.getElementById('edit-balance').value);
-
-        const allAccounts = [accounts.owner, ...accounts.admins, ...accounts.users];
-        const account = allAccounts.find(acc => acc.username === username);
-
-        if (account) {
-            account.balance = newBalance;
-            saveData();
-            populateAccountList();
-            alert(`Updated balance for ${username} to $${newBalance}`);
-        } else {
-            alert(`Account with username ${username} not found.`);
+            if (users[targetUser] && !isNaN(currencyAmount)) {
+                users[targetUser].currency += currencyAmount;
+                alert(`${currencyAmount} currency added to ${targetUser}.`);
+                document.getElementById('targetUser').value = '';
+                document.getElementById('currencyAmount').value = '';
+            } else {
+                alert('Invalid username or amount.');
+            }
         }
-    }
 
-    function handleBanAccount(event) {
-        event.preventDefault();
-        const username = document.getElementById('ban-username').value;
-
-        const allAccounts = [accounts.owner, ...accounts.admins, ...accounts.users];
-        const account = allAccounts.find(acc => acc.username === username);
-
-        if (account) {
-            bannedAccounts.push(username);
-            saveData();
-            alert(`Successfully banned ${username}`);
-        } else {
-            alert(`Account with username ${username} not found.`);
+        // Initial predefined items
+        function loadInitialItems() {
+            console.log("Available items:", predefinedItems);
         }
-    }
 
-    // Load data from localStorage on page load
-    window.onload = function () {
-        loadData();
-        populateAccountList();
-    };
-</script>
-
-
+        loadInitialItems();
+    </script>
 </body>
 </html>
