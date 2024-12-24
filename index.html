@@ -3,396 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatroom Shop Website</title>
-    <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
-    <style>
-       body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #f0f0f5;
-    color: #333;
-}
-
-#top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-#user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-#currencies {
-    display: flex;
-    gap: 15px;
-    font-weight: bold;
-}
-
-nav {
-    display: flex;
-    background-color: #34495e;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.tab {
-    flex: 1;
-    padding: 15px;
-    text-align: center;
-    color: #ecf0f1;
-    background-color: #34495e;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.tab:hover {
-    background-color: #3d566e;
-}
-
-.tab.active {
-    background-color: #2c3e50;
-}
-
-#content {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background-color: #ecf0f1;
-    border-top: 1px solid #bdc3c7;
-}
-
-footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-}
-
-#chat-messages {
-    border: 1px solid #bdc3c7;
-    border-radius: 5px;
-    padding: 10px;
-    height: 200px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-    background-color: #fff;
-}
-
-input[type="text"], input[type="password"], input[type="number"] {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #bdc3c7;
-    border-radius: 5px;
-}
-
-button {
-    padding: 10px 15px;
-    border: none;
-    background-color: #2980b9;
-    color: #fff;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #3498db;
-}
-
-#items, #inventory-items, #user-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-.item {
-    border: 1px solid #bdc3c7;
-    border-radius: 5px;
-    padding: 10px;
-    text-align: center;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.item:hover {
-    transform: scale(1.05);
-}
-
-.item button {
-    margin-top: 10px;
-}
-
-    </style>
+    <title>Website with Login and Chatroom</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Top Bar -->
-    <div id="top-bar">
-        <div id="user-info">
-            <span id="username">Guest</span>
-            <img id="avatar" src="default-avatar.png" alt="Avatar">
-        </div>
-        <div id="currencies">
-            <span id="coins">Coins: 0</span>
-            <span id="gems">Gems: 0</span>
-        </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <nav>
-        <button class="tab" onclick="showTab('chatroom')">Home/Chatroom</button>
-        <button class="tab" onclick="showTab('shop')">Shop</button>
-        <button class="tab" onclick="showTab('inventory')">Inventory</button>
-        <button class="tab" onclick="showTab('trade')">Trade</button>
-        <button class="tab" onclick="showTab('auth')">Sign Up/Login</button>
-        <button id="owner-tab" class="tab hidden" onclick="showTab('owner-panel')">Owner Panel</button>
-    </nav>
-
-    <!-- Tab Content -->
-    <div id="content">
-        <!-- Chatroom -->
-        <div id="chatroom" class="tab-content">
-            <h2>Chatroom</h2>
-            <div id="chat-messages"></div>
-            <input type="text" id="chat-input" placeholder="Type a message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
-
-        <!-- Shop -->
-        <div id="shop" class="tab-content hidden">
-            <h2>Shop</h2>
-            <div id="items">
-                <!-- Items will be dynamically loaded here -->
-            </div>
-        </div>
-
-        <!-- Inventory -->
-        <div id="inventory" class="tab-content hidden">
-            <h2>Your Inventory</h2>
-            <div id="inventory-items">
-                <!-- Inventory items will be dynamically loaded here -->
-            </div>
-        </div>
-
-        <!-- Trade -->
-        <div id="trade" class="tab-content hidden">
-            <h2>Trade</h2>
-            <p>Feature coming soon...</p>
-        </div>
-
-        <!-- Sign Up/Login -->
-        <div id="auth" class="tab-content hidden">
+    <header>
+        <h1>Chatroom App</h1>
+        <div id="user-display">Welcome, Guest</div>
+    </header>
+    <main>
+        <section id="auth-section">
             <h2>Sign Up / Login</h2>
-            <div id="login-form">
-                <input type="text" id="login-username" placeholder="Username">
-                <input type="password" id="login-password" placeholder="Password">
-                <button onclick="login()">Login</button>
-            </div>
-            <div id="signup-form">
-                <input type="text" id="signup-username" placeholder="Username">
-                <input type="password" id="signup-password" placeholder="Password">
-                <button onclick="signup()">Sign Up</button>
-            </div>
-        </div>
-
-        <!-- Owner Panel -->
-        <div id="owner-panel" class="tab-content hidden">
-            <h2>Owner Panel</h2>
-            <div>
-                <h3>Add Item to Shop</h3>
-                <input type="text" id="item-name" placeholder="Item Name">
-                <input type="number" id="item-price" placeholder="Price (Coins)">
-                <input type="number" id="item-gem-price" placeholder="Price (Gems)">
-                <button onclick="addItemToShop()">Add Item</button>
-            </div>
-            <div>
-                <h3>Manage Users</h3>
-                <div id="user-list">
-                    <!-- User list will be dynamically loaded here -->
+            <div id="auth-forms">
+                <div id="signup-form">
+                    <h3>Sign Up</h3>
+                    <input type="text" id="signup-username" placeholder="Username">
+                    <input type="password" id="signup-password" placeholder="Password">
+                    <button onclick="signUp()">Sign Up</button>
+                </div>
+                <div id="login-form">
+                    <h3>Login</h3>
+                    <input type="text" id="login-username" placeholder="Username">
+                    <input type="password" id="login-password" placeholder="Password">
+                    <button onclick="login()">Login</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Chatroom Shop Website</p>
-    </footer>
+        </section>
+        <section id="chatroom-section" style="display: none;">
+            <h2>Chatroom</h2>
+            <div id="chat-display"></div>
+            <input type="text" id="chat-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </section>
+        <section id="moderation-panel" style="display: none;">
+            <h2>Moderation Panel</h2>
+            <div id="user-list"></div>
+        </section>
+        <section id="ban-screen" style="display: none;">
+            <h2>You Are Banned</h2>
+            <p>Your account has been banned. Please contact support.</p>
+        </section>
+    </main>
 
     <script>
-       const users = [
-    { username: "Owner", password: "ownerpass", role: "owner", coins: 1000, gems: 100, inventory: [] },
-];
-const items = JSON.parse(localStorage.getItem('shopItems')) || [];
-
-let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser')) || null;
-
-function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-    document.getElementById(tabId).classList.remove('hidden');
-    if (tabId === 'shop') updateShop();
-    if (tabId === 'inventory') updateInventory();
-    if (tabId === 'owner-panel') populateUserList();
-}
-
-function login() {
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
-    const user = users.find(u => u.username === username && u.password === password);
-    if (user) {
-        loggedInUser = user;
-        localStorage.setItem('loggedInUser', JSON.stringify(user));
-        updateUserInfo();
-        showTab('chatroom');
-        if (user.role === 'owner') document.getElementById('owner-tab').classList.remove('hidden');
-    } else {
-        alert('Invalid login!');
-    }
-}
-
-function logout() {
-    loggedInUser = null;
-    localStorage.removeItem('loggedInUser');
-    document.getElementById('username').textContent = "Guest";
-    document.getElementById('coins').textContent = "Coins: 0";
-    document.getElementById('gems').textContent = "Gems: 0";
-    document.getElementById('owner-tab').classList.add('hidden');
-    showTab('auth');
-}
-
-function signup() {
-    const username = document.getElementById('signup-username').value;
-    const password = document.getElementById('signup-password').value;
-    if (!users.some(u => u.username === username)) {
-        users.push({ username, password, role: 'user', coins: 0, gems: 0, inventory: [] });
-        alert('Signup successful!');
-    } else {
-        alert('Username already exists!');
-    }
-}
-
-function addItemToShop() {
-    const name = document.getElementById('item-name').value;
-    const price = Number(document.getElementById('item-price').value);
-    const gemPrice = Number(document.getElementById('item-gem-price').value);
-    if (name && (price > 0 || gemPrice > 0)) {
-        items.push({ name, price, gemPrice });
-        localStorage.setItem('shopItems', JSON.stringify(items));
-        alert('Item added!');
-        updateShop();
-    } else {
-        alert('Invalid item details!');
-    }
-}
-
-function updateShop() {
-    const shopContainer = document.getElementById('items');
-    shopContainer.innerHTML = '';
-    items.forEach((item, index) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'item';
-        itemDiv.innerHTML = `
-            <h4>${item.name}</h4>
-            <p>Price: ${item.price} Coins</p>
-            <p>Price: ${item.gemPrice} Gems</p>
-            <button onclick="buyItem(${index})">Buy</button>
-        `;
-        shopContainer.appendChild(itemDiv);
-    });
-}
-
-function buyItem(index) {
-    if (!loggedInUser) {
-        alert('Please log in to purchase items!');
-        return;
-    }
-    const item = items[index];
-    if (loggedInUser.coins >= item.price || loggedInUser.gems >= item.gemPrice) {
-        if (item.price > 0 && loggedInUser.coins >= item.price) {
-            loggedInUser.coins -= item.price;
-        } else if (item.gemPrice > 0 && loggedInUser.gems >= item.gemPrice) {
-            loggedInUser.gems -= item.gemPrice;
+        // Initialize the system with a premade owner account
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify({ owner: { password: 'ownerpass', balance: 0, banned: false } }));
         }
-        loggedInUser.inventory.push(item.name);
-        alert(`You purchased ${item.name}!`);
-        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-        updateUserInfo();
-        updateInventory();
-    } else {
-        alert('Insufficient funds!');
-    }
-}
 
-function updateInventory() {
-    const inventoryContainer = document.getElementById('inventory-items');
-    inventoryContainer.innerHTML = '';
-    if (loggedInUser && loggedInUser.inventory.length > 0) {
-        loggedInUser.inventory.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'item';
-            itemDiv.textContent = item;
-            inventoryContainer.appendChild(itemDiv);
-        });
-    } else {
-        inventoryContainer.textContent = 'Your inventory is empty!';
-    }
-}
+        function signUp() {
+            const username = document.getElementById('signup-username').value;
+            const password = document.getElementById('signup-password').value;
 
-function updateUserInfo() {
-    document.getElementById('username').textContent = loggedInUser.username;
-    document.getElementById('coins').textContent = `Coins: ${loggedInUser.coins}`;
-    document.getElementById('gems').textContent = `Gems: ${loggedInUser.gems}`;
-}
+            if (!username || !password) {
+                alert('Please fill in both fields.');
+                return;
+            }
 
-function populateUserList() {
-    const userList = document.getElementById('user-list');
-    userList.innerHTML = '';
-    users.forEach(user => {
-        const userDiv = document.createElement('div');
-        userDiv.className = 'item';
-        userDiv.innerHTML = `
-            <h4>${user.username} (${user.role})</h4>
-            <p>Coins: ${user.coins}</p>
-            <p>Gems: ${user.gems}</p>
-            <button onclick="addItemToUser('${user.username}')">Add Item</button>
-        `;
-        userList.appendChild(userDiv);
-    });
-}
+            const users = JSON.parse(localStorage.getItem('users'));
 
-function addItemToUser(username) {
-    const user = users.find(u => u.username === username);
-    if (user) {
-        const itemName = prompt('Enter the item name to add to the user\'s inventory:');
-        const coins = prompt('Enter the amount of coins to add:') || 0;
-        const gems = prompt('Enter the amount of gems to add:') || 0;
+            if (users[username]) {
+                alert('Username already exists.');
+                return;
+            }
 
-        if (itemName) user.inventory.push(itemName);
-        user.coins += parseInt(coins);
-        user.gems += parseInt(gems);
+            users[username] = { password: password, balance: 0, banned: false };
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Sign up successful!');
+        }
 
-        alert(`Updated ${user.username}'s inventory and balance!`);
-        populateUserList();
-    }
-}
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
 
-if (loggedInUser) updateUserInfo();
-showTab('auth');
+            if (!username || !password) {
+                alert('Please fill in both fields.');
+                return;
+            }
 
-    </script>
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users[username];
+
+            if (!user || user.password !== password) {
+                alert('Invalid username or password.');
+                return;
+            }
+
+            if (user.banned) {
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('ban-screen').style.display = 'block';
+                return;
+            }
+
+            localStorage.setItem('currentUser', username);
+            document.getElementById('user-display').textContent = `Welcome, ${username}`;
+            document.getElementById('auth-section').style.display = 'none';
+
+            if (username === 'owner') {
+                document.getElementById('moderation-panel').style.display = 'block';
+                displayUsers();
+            } else {
+                document.getElementById('chatroom-section').style.display = 'block';
+            }
+        }
+
+        function sendMessage() {
+            const currentUser = localStorage.getItem('currentUser');
+            const messageInput = document.getElementById('chat-input');
+            const chatDisplay = document.getElementById('chat-display');
+
+            if (!currentUser) {
+                alert('You must be logged in to send messages.');
+                return;
+            }
+
+            const message = messageInput.value;
+
+            if (!message) {
+                alert('Message cannot be empty.');
+                return;
+            }
+
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+
+            messages.push({ user: currentUser, text: message });
+            localStorage.setItem('messages', JSON.stringify(messages));
+
+            displayMessages();
+            messageInput.value = '';
+        }
+
+        function displayMessages() {
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            const chatDisplay = document.getElementById('chat-display');
+
+            chatDisplay.innerHTML = '';
+            messages.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.textContent = `${msg.user}: ${msg.text}`;
+                chatDisplay.appendChild(messageElement);
+            });
+        }
+
+        function displayUsers() {
+            const users = JSON.parse(localStorage.getItem('users'));
+            const userList = document.getElementById('user-list');
+
+            userList.innerHTML = '';
+            Object.keys(users).forEach(username => {
+                const user = users[username];
+                const userElement = document.createElement('div');
+
+                userElement.innerHTML = `
+                    <strong>${username}</strong> - Balance: ${user.balance} - Banned: ${user.banned}
+                    <button onclick="addCurrency('${username}')">Add Currency</button>
+                    <button onclick="banUser('${username}')">Ban</button>
+                    <button onclick="unbanUser('${username}')">Unban</button>
+                `;
+                userList.appendChild(userElement);
+            });
+        }
+
+        function addCurrency(username) {
+            const amount = prompt('Enter amount to add:');
+            const users = JSON.parse(localStorage.getItem('users'));
+
+            if (!amount || isNaN(amount)) {
+                alert('Invalid amount.');
+                return;
+            }
+
+            users[username].balance += parseInt(amount);
+            localStorage.setItem('users', JSON.stringify(users));
+            displayUsers();
+        }
+
+        function banUser(username) {
+            const users = JSON.parse(localStorage.getItem('users'));
+            users[username].banned = true;
+            localStorage.setItem('users', JSON.stringify(users));
+            displayUsers();
+        }
+
+        function unbanUser(username) {
+            const users = JSON.parse(localStorage.getItem('users'));
+            users[username].banned = false;
+            localStorage.setItem('users', JSON.stringify(users));
+            displayUsers();
+        }
+
+        if (localStorage.getItem('currentUser')) {
+            const currentUser = localStorage.getItem('currentUser');
+            const users = JSON.parse(localStorage.getItem('users'));
+
+            if (users[currentUser].banned) {
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('ban-screen').style.display = 'block';
+            } else {
+                document.getElementById('auth-section').style.display = 'none';
+                if (currentUser === 'owner') {
+                    document.getElementById('moderation-panel').style.display = 'block';
+                    displayUsers();
+                } else {
+                    document.getElementById('chatroom-section').style.display = 'block';
+                    document.getElementById('user-display').textContent = `Welcome, ${currentUser}`;
+                }
+            }
+        }
+     </script>
 </body>
 </html>
