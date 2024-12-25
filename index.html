@@ -3,71 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website with Login and Chatroom</title>
-    <link rel="stylesheet" href="style.css">
+    <title>User Management Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: #fff;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 0;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #555;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Chatroom App</h1>
-        <div id="user-display">Welcome, Guest</div>
+        <h1>User Management System</h1>
     </header>
-    <main>
-        <section id="auth-section">
-            <h2>Sign Up / Login</h2>
-            <div id="auth-forms">
-                <div id="signup-form">
-                    <h3>Sign Up</h3>
-                    <input type="text" id="signup-username" placeholder="Username">
-                    <input type="password" id="signup-password" placeholder="Password">
-                    <button onclick="signUp()">Sign Up</button>
-                </div>
-                <div id="login-form">
-                    <h3>Login</h3>
-                    <input type="text" id="login-username" placeholder="Username">
-                    <input type="password" id="login-password" placeholder="Password">
-                    <button onclick="login()">Login</button>
-                </div>
-            </div>
-        </section>
-        <section id="chatroom-section" style="display: none;">
-            <h2>Chatroom</h2>
-            <div id="chat-display"></div>
-            <input type="text" id="chat-input" placeholder="Type your message...">
-            <button onclick="sendMessage()">Send</button>
-        </section>
-        <section id="moderation-panel" style="display: none;">
-            <h2>Moderation Panel</h2>
-            <div id="user-list"></div>
-        </section>
-        <section id="ban-screen" style="display: none;">
-            <h2>You Are Banned</h2>
-            <p>Your account has been banned. Please contact support.</p>
-        </section>
-    </main>
+    <div class="container">
+        <div id="login-section">
+            <h2>Login</h2>
+            <input type="text" id="login-username" placeholder="Username" required><br>
+            <input type="password" id="login-password" placeholder="Password" required><br>
+            <button class="btn" onclick="login()">Login</button>
+        </div>
+
+        <div id="signup-section" class="hidden">
+            <h2>Sign Up</h2>
+            <input type="text" id="signup-username" placeholder="Username" required><br>
+            <input type="password" id="signup-password" placeholder="Password" required><br>
+            <button class="btn" onclick="signUp()">Sign Up</button>
+        </div>
+
+        <div id="admin-section" class="hidden">
+            <h2>Admin Menu</h2>
+            <button class="btn" onclick="viewUsers()">View Users</button>
+            <div id="user-list" class="hidden"></div>
+        </div>
+
+        <div id="user-section" class="hidden">
+            <h2>Welcome, <span id="user-name"></span></h2>
+            <p>Your balance: <span id="user-balance">0</span></p>
+            <button class="btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
 
     <script>
-        // Initialize the system with a premade owner account
+        const admin = {
+            username: 'admin',
+            password: 'admin',
+            isAdmin: true
+        };
+
         if (!localStorage.getItem('users')) {
-            localStorage.setItem('users', JSON.stringify({ owner: { password: 'ownerpass', balance: 0, banned: false } }));
+            localStorage.setItem('users', JSON.stringify([admin]));
         }
 
         function signUp() {
             const username = document.getElementById('signup-username').value;
             const password = document.getElementById('signup-password').value;
+            let users = JSON.parse(localStorage.getItem('users'));
 
-            if (!username || !password) {
-                alert('Please fill in both fields.');
+            if (users.some(user => user.username === username)) {
+                alert('Username already exists!');
                 return;
             }
 
-            const users = JSON.parse(localStorage.getItem('users'));
-
-            if (users[username]) {
-                alert('Username already exists.');
-                return;
-            }
-
-            users[username] = { password: password, balance: 0, banned: false };
+            users.push({ username, password, balance: 0, isAdmin: false });
             localStorage.setItem('users', JSON.stringify(users));
             alert('Sign up successful!');
         }
@@ -75,141 +105,65 @@
         function login() {
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
-
-            if (!username || !password) {
-                alert('Please fill in both fields.');
-                return;
-            }
-
             const users = JSON.parse(localStorage.getItem('users'));
-            const user = users[username];
+            const user = users.find(u => u.username === username && u.password === password);
 
-            if (!user || user.password !== password) {
-                alert('Invalid username or password.');
+            if (!user) {
+                alert('Invalid credentials!');
                 return;
             }
 
-            if (user.banned) {
-                document.getElementById('auth-section').style.display = 'none';
-                document.getElementById('ban-screen').style.display = 'block';
-                return;
-            }
-
-            localStorage.setItem('currentUser', username);
-            document.getElementById('user-display').textContent = `Welcome, ${username}`;
-            document.getElementById('auth-section').style.display = 'none';
-
-            if (username === 'owner') {
-                document.getElementById('moderation-panel').style.display = 'block';
-                displayUsers();
+            if (user.isAdmin) {
+                document.getElementById('admin-section').classList.remove('hidden');
             } else {
-                document.getElementById('chatroom-section').style.display = 'block';
-            }
-        }
-
-        function sendMessage() {
-            const currentUser = localStorage.getItem('currentUser');
-            const messageInput = document.getElementById('chat-input');
-            const chatDisplay = document.getElementById('chat-display');
-
-            if (!currentUser) {
-                alert('You must be logged in to send messages.');
-                return;
+                document.getElementById('user-section').classList.remove('hidden');
+                document.getElementById('user-name').textContent = user.username;
+                document.getElementById('user-balance').textContent = user.balance;
             }
 
-            const message = messageInput.value;
-
-            if (!message) {
-                alert('Message cannot be empty.');
-                return;
-            }
-
-            const messages = JSON.parse(localStorage.getItem('messages')) || [];
-
-            messages.push({ user: currentUser, text: message });
-            localStorage.setItem('messages', JSON.stringify(messages));
-
-            displayMessages();
-            messageInput.value = '';
+            document.getElementById('login-section').classList.add('hidden');
         }
 
-        function displayMessages() {
-            const messages = JSON.parse(localStorage.getItem('messages')) || [];
-            const chatDisplay = document.getElementById('chat-display');
-
-            chatDisplay.innerHTML = '';
-            messages.forEach(msg => {
-                const messageElement = document.createElement('div');
-                messageElement.textContent = `${msg.user}: ${msg.text}`;
-                chatDisplay.appendChild(messageElement);
-            });
+        function logout() {
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('admin-section').classList.add('hidden');
+            document.getElementById('user-section').classList.add('hidden');
         }
 
-        function displayUsers() {
+        function viewUsers() {
             const users = JSON.parse(localStorage.getItem('users'));
             const userList = document.getElementById('user-list');
 
-            userList.innerHTML = '';
-            Object.keys(users).forEach(username => {
-                const user = users[username];
-                const userElement = document.createElement('div');
+            userList.innerHTML = '<h3>Users:</h3>' + users.map(user => `
+                <div>
+                    ${user.username} - Balance: ${user.balance} <br>
+                    <button onclick="addCurrency('${user.username}', 10)">Add 10 Currency</button>
+                    <button onclick="banUser('${user.username}')">Ban</button>
+                </div>`
+            ).join('');
 
-                userElement.innerHTML = `
-                    <strong>${username}</strong> - Balance: ${user.balance} - Banned: ${user.banned}
-                    <button onclick="addCurrency('${username}')">Add Currency</button>
-                    <button onclick="banUser('${username}')">Ban</button>
-                    <button onclick="unbanUser('${username}')">Unban</button>
-                `;
-                userList.appendChild(userElement);
-            });
+            userList.classList.remove('hidden');
         }
 
-        function addCurrency(username) {
-            const amount = prompt('Enter amount to add:');
-            const users = JSON.parse(localStorage.getItem('users'));
+        function addCurrency(username, amount) {
+            let users = JSON.parse(localStorage.getItem('users'));
+            const user = users.find(u => u.username === username);
 
-            if (!amount || isNaN(amount)) {
-                alert('Invalid amount.');
-                return;
+            if (user) {
+                user.balance += amount;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert(`Added ${amount} to ${username}'s balance.`);
+                viewUsers();
             }
-
-            users[username].balance += parseInt(amount);
-            localStorage.setItem('users', JSON.stringify(users));
-            displayUsers();
         }
 
         function banUser(username) {
-            const users = JSON.parse(localStorage.getItem('users'));
-            users[username].banned = true;
+            let users = JSON.parse(localStorage.getItem('users'));
+            users = users.filter(user => user.username !== username);
             localStorage.setItem('users', JSON.stringify(users));
-            displayUsers();
+            alert(`${username} has been banned.`);
+            viewUsers();
         }
-
-        function unbanUser(username) {
-            const users = JSON.parse(localStorage.getItem('users'));
-            users[username].banned = false;
-            localStorage.setItem('users', JSON.stringify(users));
-            displayUsers();
-        }
-
-        if (localStorage.getItem('currentUser')) {
-            const currentUser = localStorage.getItem('currentUser');
-            const users = JSON.parse(localStorage.getItem('users'));
-
-            if (users[currentUser].banned) {
-                document.getElementById('auth-section').style.display = 'none';
-                document.getElementById('ban-screen').style.display = 'block';
-            } else {
-                document.getElementById('auth-section').style.display = 'none';
-                if (currentUser === 'owner') {
-                    document.getElementById('moderation-panel').style.display = 'block';
-                    displayUsers();
-                } else {
-                    document.getElementById('chatroom-section').style.display = 'block';
-                    document.getElementById('user-display').textContent = `Welcome, ${currentUser}`;
-                }
-            }
-        }
-     </script>
+    </script>
 </body>
 </html>
