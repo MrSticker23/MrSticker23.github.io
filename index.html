@@ -42,6 +42,25 @@
         .hidden {
             display: none;
         }
+        nav {
+            display: flex;
+            justify-content: center;
+            background: #444;
+            padding: 0.5rem 0;
+        }
+        nav a {
+            color: #fff;
+            margin: 0 1rem;
+            text-decoration: none;
+            padding: 0.5rem;
+        }
+        nav a:hover {
+            background: #555;
+            border-radius: 5px;
+        }
+        .tab-content {
+            margin-top: 1rem;
+        }
         .announcement {
             background: #e9ecef;
             padding: 1rem;
@@ -54,8 +73,13 @@
     <header>
         <h1>User Management System</h1>
     </header>
+    <nav>
+        <a href="#" onclick="showTab('home')">Home</a>
+        <a href="#" onclick="showTab('login')">Login</a>
+        <a href="#" onclick="showTab('signup')">Sign Up</a>
+    </nav>
     <div class="container">
-        <div id="home-section">
+        <div id="home-tab" class="tab-content">
             <h2>Home</h2>
             <div id="announcements">
                 <div class="announcement">
@@ -69,14 +93,14 @@
             </div>
         </div>
 
-        <div id="login-section">
+        <div id="login-tab" class="tab-content hidden">
             <h2>Login</h2>
             <input type="text" id="login-username" placeholder="Username" required><br>
             <input type="password" id="login-password" placeholder="Password" required><br>
             <button class="btn" onclick="login()">Login</button>
         </div>
 
-        <div id="signup-section" class="hidden">
+        <div id="signup-tab" class="tab-content hidden">
             <h2>Sign Up</h2>
             <input type="text" id="signup-username" placeholder="Username" required><br>
             <input type="password" id="signup-password" placeholder="Password" required><br>
@@ -107,6 +131,14 @@
             localStorage.setItem('users', JSON.stringify([admin]));
         }
 
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            document.getElementById(`${tab}-tab`).classList.remove('hidden');
+        }
+
         function signUp() {
             const username = document.getElementById('signup-username').value;
             const password = document.getElementById('signup-password').value;
@@ -120,6 +152,7 @@
             users.push({ username, password, balance: 0, isAdmin: false });
             localStorage.setItem('users', JSON.stringify(users));
             alert('Sign up successful!');
+            showTab('login');
         }
 
         function login() {
@@ -133,7 +166,7 @@
                 return;
             }
 
-            document.getElementById('home-section').classList.add('hidden');
+            showTab('home');
 
             if (user.isAdmin) {
                 document.getElementById('admin-section').classList.remove('hidden');
@@ -142,15 +175,12 @@
                 document.getElementById('user-name').textContent = user.username;
                 document.getElementById('user-balance').textContent = user.balance;
             }
-
-            document.getElementById('login-section').classList.add('hidden');
         }
 
         function logout() {
-            document.getElementById('home-section').classList.remove('hidden');
-            document.getElementById('login-section').classList.remove('hidden');
             document.getElementById('admin-section').classList.add('hidden');
             document.getElementById('user-section').classList.add('hidden');
+            showTab('home');
         }
 
         function viewUsers() {
