@@ -42,6 +42,12 @@
         .hidden {
             display: none;
         }
+        .announcement {
+            background: #e9ecef;
+            padding: 1rem;
+            border-left: 4px solid #333;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -49,6 +55,20 @@
         <h1>User Management System</h1>
     </header>
     <div class="container">
+        <div id="home-section">
+            <h2>Home</h2>
+            <div id="announcements">
+                <div class="announcement">
+                    <h3>Welcome to the User Management System!</h3>
+                    <p>Stay updated with the latest announcements here.</p>
+                </div>
+                <div class="announcement">
+                    <h3>Update: New Features Added</h3>
+                    <p>Admins can now manage user balances and ban users directly from the admin panel!</p>
+                </div>
+            </div>
+        </div>
+
         <div id="login-section">
             <h2>Login</h2>
             <input type="text" id="login-username" placeholder="Username" required><br>
@@ -113,6 +133,8 @@
                 return;
             }
 
+            document.getElementById('home-section').classList.add('hidden');
+
             if (user.isAdmin) {
                 document.getElementById('admin-section').classList.remove('hidden');
             } else {
@@ -125,6 +147,7 @@
         }
 
         function logout() {
+            document.getElementById('home-section').classList.remove('hidden');
             document.getElementById('login-section').classList.remove('hidden');
             document.getElementById('admin-section').classList.add('hidden');
             document.getElementById('user-section').classList.add('hidden');
