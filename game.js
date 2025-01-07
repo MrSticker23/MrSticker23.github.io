@@ -18,19 +18,17 @@ function startLevel(level) {
 
 // Display levels in the menu
 function updateLevelSelection() {
-    levelsContainer.innerHTML = ""; // Clear any previous buttons
+    levelsContainer.innerHTML = ""; // Clear previous levels
 
-    // Create buttons for each level, enabling only the unlocked levels
     for (let i = 1; i <= totalLevels; i++) {
         const levelButton = document.createElement("button");
         levelButton.textContent = `Level ${i}`;
-        levelButton.disabled = i > unlockedLevels; // Disable levels the user hasn't unlocked
-        levelButton.addEventListener("click", () => startLevel(i)); // Start the selected level
+        levelButton.disabled = i > unlockedLevels; // Disable levels beyond current progress
+        levelButton.addEventListener("click", () => startLevel(i)); // Start selected level
         levelsContainer.appendChild(levelButton);
     }
 
-    // Show the level selection div
-    document.getElementById("levelSelect").style.display = "block";
+    document.getElementById("levelSelect").style.display = "block"; // Show level select screen
 }
 
 // Generate a 7-character save code
@@ -43,7 +41,7 @@ function unlockLevels(code) {
     if (code && code.length >= 7) {
         const level = parseInt(code.slice(-1), 10); // Last digit of code represents level
         if (!isNaN(level) && level >= 1 && level <= totalLevels) {
-            unlockedLevels = Math.max(unlockedLevels, level);
+            unlockedLevels = Math.max(unlockedLevels, level); // Unlock the latest level
             updateLevelSelection();
         }
     }
@@ -64,9 +62,14 @@ function loadProgressFromLocal() {
 
 // Event Listeners
 document.getElementById("startGame").addEventListener("click", () => {
-    updateLevelSelection();  // Show available levels
-    document.getElementById("menu").style.display = "none";  // Hide the main menu
-    document.getElementById("levelSelect").style.display = "block";  // Show the level selection
+    updateLevelSelection();
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("levelSelect").style.display = "block";
+});
+
+document.getElementById("loadProgress").addEventListener("click", () => {
+    const code = saveCodeInput.value.trim();
+    unlockLevels(code);
 });
 
 // Example: Complete a level
@@ -146,8 +149,8 @@ function initializeGame(level) {
 
 // Load progress on page load
 window.onload = () => {
-    loadProgressFromLocal();
-    updateLevelSelection();
+    loadProgressFromLocal(); // Load progress from local storage
+    updateLevelSelection();  // Display available levels
 };
 
 // Save progress before closing the page
