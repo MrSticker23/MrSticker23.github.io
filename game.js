@@ -63,10 +63,10 @@ function loadProgressFromLocal() {
 }
 
 // Event Listeners
-document.getElementById("startGame").addEventListener("click", updateLevelSelection);
-document.getElementById("loadProgress").addEventListener("click", () => {
-    const code = saveCodeInput.value.trim();
-    unlockLevels(code);
+document.getElementById("startGame").addEventListener("click", () => {
+    updateLevelSelection();  // Show available levels
+    document.getElementById("menu").style.display = "none";  // Hide the main menu
+    document.getElementById("levelSelect").style.display = "block";  // Show the level selection
 });
 
 // Example: Complete a level
