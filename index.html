@@ -3,44 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peggle Game</title>
+    <title>Peggle-Inspired Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
             padding: 0;
-            background: #add8e6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #282c34;
+            color: white;
         }
+
         canvas {
-            display: block;
-            margin: 20px auto;
-            background: white;
-            border: 1px solid black;
+            border: 2px solid white;
+            margin-top: 10px;
         }
+
+        #menu, #game, #save {
+            display: none;
+        }
+
         #menu {
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
         }
+
         button {
+            margin: 10px;
             padding: 10px 20px;
-            margin: 5px;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
+            background-color: #61dafb;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #21a1f1;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        #save-code {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div id="menu">
-        <h1>Peggle Game</h1>
-        <button id="startGame">Start Game</button>
-        <div id="levelSelect" style="display: none;">
-            <h2>Select Level</h2>
-            <div id="levels"></div>
-        </div>
-        <input type="text" id="saveCodeInput" placeholder="Enter Save Code">
-        <button id="loadProgress">Load Progress</button>
+        <h1>Peggle-Inspired Game</h1>
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="showSave()">Load Save Code</button>
+        <button onclick="showInstructions()">Instructions</button>
     </div>
-    <canvas id="gameCanvas" width="800" height="600" style="display: none;"></canvas>
-    <script src="game.js"></script>
+
+    <div id="game">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <button onclick="generateSaveCode()">Generate Save Code</button>
+        <p id="save-code"></p>
+    </div>
+
+    <div id="save">
+        <h2>Load Save Code</h2>
+        <input type="text" id="saveInput" placeholder="Enter your save code">
+        <button onclick="loadSaveCode()">Load</button>
+        <button onclick="backToMenu()">Back to Menu</button>
+    </div>
+
+    <script>
+        const menu = document.getElementById("menu");
+        const game = document.getElementById("game");
+        const save = document.getElementById("save");
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        let currentLevel = 1;
+        const totalLevels = 25;
+
+        const levels = [
+            // Define levels with peg positions
+            { pegs: [{ x: 400, y: 300 }, { x: 450, y: 350 }, { x: 350, y: 350 }] },
+            { pegs: [{ x: 300, y: 300 }, { x: 500, y: 300 }, { x: 400, y: 400 }] },
+            { pegs: [{ x: 200, y: 200 }, { x: 600, y: 200 }, { x: 400, y: 300 }, { x: 400, y: 400 }] },
+            // Add more levels as needed
+        ];
+
+        for (let i = levels.length; i < totalLevels; i++) {
+            const pegs = Array.from({ length: 5 }, () => ({
+                x: Math.random() * 700 + 50,
+                y: Math.random() * 500 + 50,
+            }));
+            levels.push({ pegs });
+        }
+
+        function startGame() {
+            menu.style.display = "none";
+            game.style.display = "block";
+            save.style.display = "none";
+            loadLevel(currentLevel);
+        }
+
+        function loadLevel(level) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.font = "24px Arial";
+            ctx.fillText(`Level ${level}`, canvas.width / 2 - 50, 50);
+            
+            const pegs = levels[level - 1].pegs;
+            pegs.forEach(peg => {
+                ctx.beginPath();
+                ctx.arc(peg.x, peg.y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = "red";
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        function generateSaveCode() {
+            const saveCode = btoa(JSON.stringify({ level: currentLevel }));
+            document.getElementById("save-code").innerText = `Save Code: ${saveCode}`;
+        }
+
+        function showSave() {
+            menu.style.display = "none";
+            save.style.display = "block";
+        }
+
+        function loadSaveCode() {
+            const saveCode = document.getElementById("saveInput").value;
+            try {
+                const saveData = JSON.parse(atob(saveCode));
+                currentLevel = saveData.level || 1;
+                alert(`Save loaded! Starting from level ${currentLevel}`);
+                startGame();
+            } catch (e) {
+                alert("Invalid save code");
+            }
+        }
+
+        function backToMenu() {
+            menu.style.display = "block";
+            game.style.display = "none";
+            save.style.display = "none";
+        }
+
+        function showInstructions() {
+            alert("Instructions: Bounce the ball to clear pegs. Progress is saved with save codes.");
+        }
+
+        // Initialize the menu
+        menu.style.display = "block";
+    </script>
 </body>
 </html>
