@@ -18,14 +18,18 @@ function startLevel(level) {
 
 // Display levels in the menu
 function updateLevelSelection() {
-    levelsContainer.innerHTML = "";
+    levelsContainer.innerHTML = ""; // Clear any previous buttons
+
+    // Create buttons for each level, enabling only the unlocked levels
     for (let i = 1; i <= totalLevels; i++) {
         const levelButton = document.createElement("button");
         levelButton.textContent = `Level ${i}`;
-        levelButton.disabled = i > unlockedLevels; // Lock levels beyond current progress
-        levelButton.addEventListener("click", () => startLevel(i));
+        levelButton.disabled = i > unlockedLevels; // Disable levels the user hasn't unlocked
+        levelButton.addEventListener("click", () => startLevel(i)); // Start the selected level
         levelsContainer.appendChild(levelButton);
     }
+
+    // Show the level selection div
     document.getElementById("levelSelect").style.display = "block";
 }
 
