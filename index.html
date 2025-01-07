@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peggle-Inspired Game</title>
+    <title>Boggle/title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,13 +12,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #282c34;
+            background-color: #1e1e2f;
             color: white;
         }
 
         canvas {
             border: 2px solid white;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         #menu, #game, #save {
@@ -55,17 +55,23 @@
         #save-code {
             margin-top: 20px;
         }
+
+        #score {
+            font-size: 20px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div id="menu">
-        <h1>Peggle-Inspired Game</h1>
+        <h1>you thought this was peggle?, nope its boggle</h1>
         <button onclick="startGame()">Start Game</button>
         <button onclick="showSave()">Load Save Code</button>
         <button onclick="showInstructions()">Instructions</button>
     </div>
 
     <div id="game">
+        <div id="score">Score: 0</div>
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <button onclick="generateSaveCode()">Generate Save Code</button>
         <p id="save-code"></p>
@@ -84,31 +90,29 @@
         const save = document.getElementById("save");
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
+        const scoreDisplay = document.getElementById("score");
 
         let currentLevel = 1;
+        let score = 0;
         const totalLevels = 25;
 
-        const levels = [
-            { pegs: [{ x: 400, y: 300 }, { x: 450, y: 350 }, { x: 350, y: 350 }] },
-            { pegs: [{ x: 300, y: 300 }, { x: 500, y: 300 }, { x: 400, y: 400 }] },
-            { pegs: [{ x: 200, y: 200 }, { x: 600, y: 200 }, { x: 400, y: 300 }, { x: 400, y: 400 }] },
-        ];
-
-        for (let i = levels.length; i < totalLevels; i++) {
-            const pegs = Array.from({ length: 5 }, () => ({
+        const levels = Array.from({ length: totalLevels }, (_, i) => {
+            const pegs = Array.from({ length: 20 + i }, () => ({
                 x: Math.random() * 700 + 50,
-                y: Math.random() * 500 + 50,
+                y: Math.random() * 400 + 100,
             }));
-            levels.push({ pegs });
-        }
+            return { pegs };
+        });
 
-        let cannon = { x: canvas.width / 2, y: canvas.height - 50, angle: 0 };
+        let cannon = { x: canvas.width / 2, y: 50, angle: 0 };
         let ball = null;
 
         function startGame() {
             menu.style.display = "none";
             game.style.display = "block";
             save.style.display = "none";
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
             loadLevel(currentLevel);
             canvas.addEventListener("mousemove", aimCannon);
             canvas.addEventListener("click", shootBall);
@@ -118,8 +122,8 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "white";
             ctx.font = "24px Arial";
-            ctx.fillText(`Level ${level}`, canvas.width / 2 - 50, 50);
-            
+            ctx.fillText(`Level ${level}`, canvas.width / 2 - 50, 30);
+
             const pegs = levels[level - 1].pegs;
             pegs.forEach(peg => {
                 ctx.beginPath();
@@ -138,6 +142,17 @@
             ctx.rotate(cannon.angle);
             ctx.fillStyle = "blue";
             ctx.fillRect(-10, -40, 20, 40);
+
+            // Draw trajectory dots
+            for (let i = 1; i <= 10; i++) {
+                const x = i * 30 * Math.cos(cannon.angle);
+                const y = i * 30 * Math.sin(cannon.angle);
+                ctx.beginPath();
+                ctx.arc(cannon.x + x, cannon.y + y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                ctx.fill();
+                ctx.closePath();
+            }
             ctx.restore();
         }
 
@@ -177,6 +192,8 @@
                     const dist = Math.hypot(ball.x - peg.x, ball.y - peg.y);
                     if (dist < 10) {
                         pegs.splice(i, 1);
+                        score += 10;
+                        scoreDisplay.textContent = `Score: ${score}`;
                     }
                 }
 
@@ -206,7 +223,7 @@
         }
 
         function generateSaveCode() {
-            const saveCode = btoa(JSON.stringify({ level: currentLevel }));
+            const saveCode = btoa(JSON.stringify({ level: currentLevel, score }));
             document.getElementById("save-code").innerText = `Save Code: ${saveCode}`;
         }
 
@@ -220,6 +237,8 @@
             try {
                 const saveData = JSON.parse(atob(saveCode));
                 currentLevel = saveData.level || 1;
+                score = saveData.score || 0;
+                scoreDisplay.textContent = `Score: ${score}`;
                 alert(`Save loaded! Starting from level ${currentLevel}`);
                 startGame();
             } catch (e) {
@@ -242,3 +261,4 @@
     </script>
 </body>
 </html>
+
