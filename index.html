@@ -5,15 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Peggle Game</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: #add8e6;
+        }
         canvas {
             display: block;
-            margin: 0 auto;
-            background: #add8e6;
+            margin: 20px auto;
+            background: white;
+            border: 1px solid black;
+        }
+        #menu {
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="menu">
+        <h1>Peggle Game</h1>
+        <button id="startGame">Start Game</button>
+        <div id="levelSelect" style="display: none;">
+            <h2>Select Level</h2>
+            <div id="levels"></div>
+        </div>
+        <input type="text" id="saveCodeInput" placeholder="Enter Save Code">
+        <button id="loadProgress">Load Progress</button>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600" style="display: none;"></canvas>
     <script src="game.js"></script>
 </body>
 </html>
