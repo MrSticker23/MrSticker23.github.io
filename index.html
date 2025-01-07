@@ -89,11 +89,9 @@
         const totalLevels = 25;
 
         const levels = [
-            // Define levels with peg positions
             { pegs: [{ x: 400, y: 300 }, { x: 450, y: 350 }, { x: 350, y: 350 }] },
             { pegs: [{ x: 300, y: 300 }, { x: 500, y: 300 }, { x: 400, y: 400 }] },
             { pegs: [{ x: 200, y: 200 }, { x: 600, y: 200 }, { x: 400, y: 300 }, { x: 400, y: 400 }] },
-            // Add more levels as needed
         ];
 
         for (let i = levels.length; i < totalLevels; i++) {
@@ -104,11 +102,16 @@
             levels.push({ pegs });
         }
 
+        let cannon = { x: canvas.width / 2, y: canvas.height - 50, angle: 0 };
+        let ball = null;
+
         function startGame() {
             menu.style.display = "none";
             game.style.display = "block";
             save.style.display = "none";
             loadLevel(currentLevel);
+            canvas.addEventListener("mousemove", aimCannon);
+            canvas.addEventListener("click", shootBall);
         }
 
         function loadLevel(level) {
@@ -125,6 +128,81 @@
                 ctx.fill();
                 ctx.closePath();
             });
+
+            drawCannon();
+        }
+
+        function drawCannon() {
+            ctx.save();
+            ctx.translate(cannon.x, cannon.y);
+            ctx.rotate(cannon.angle);
+            ctx.fillStyle = "blue";
+            ctx.fillRect(-10, -40, 20, 40);
+            ctx.restore();
+        }
+
+        function aimCannon(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            cannon.angle = Math.atan2(mouseY - cannon.y, mouseX - cannon.x);
+            renderGame();
+        }
+
+        function shootBall() {
+            if (!ball) {
+                ball = {
+                    x: cannon.x,
+                    y: cannon.y,
+                    dx: Math.cos(cannon.angle) * 5,
+                    dy: Math.sin(cannon.angle) * 5,
+                };
+                updateGame();
+            }
+        }
+
+        function updateGame() {
+            if (ball) {
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+
+                // Bounce off walls
+                if (ball.x < 0 || ball.x > canvas.width) ball.dx *= -1;
+                if (ball.y < 0 || ball.y > canvas.height) ball = null; // Ball falls out of bounds
+
+                // Check collision with pegs
+                const pegs = levels[currentLevel - 1].pegs;
+                for (let i = pegs.length - 1; i >= 0; i--) {
+                    const peg = pegs[i];
+                    const dist = Math.hypot(ball.x - peg.x, ball.y - peg.y);
+                    if (dist < 10) {
+                        pegs.splice(i, 1);
+                    }
+                }
+
+                if (pegs.length === 0) {
+                    currentLevel++;
+                    if (currentLevel > totalLevels) {
+                        alert("You win!");
+                        currentLevel = 1;
+                    }
+                    loadLevel(currentLevel);
+                }
+            }
+            renderGame();
+            if (ball) requestAnimationFrame(updateGame);
+        }
+
+        function renderGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            loadLevel(currentLevel);
+            if (ball) {
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = "white";
+                ctx.fill();
+                ctx.closePath();
+            }
         }
 
         function generateSaveCode() {
@@ -156,7 +234,7 @@
         }
 
         function showInstructions() {
-            alert("Instructions: Bounce the ball to clear pegs. Progress is saved with save codes.");
+            alert("Instructions: Use the mouse to aim the cannon and click to shoot the ball. Clear all pegs to advance to the next level.");
         }
 
         // Initialize the menu
