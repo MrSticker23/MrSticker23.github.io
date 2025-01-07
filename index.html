@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boggle</title>
+    <title>Peggle-Inspired Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -64,7 +64,7 @@
 </head>
 <body>
     <div id="menu">
-        <h1>you thought this was peggle?, nope its boggle</h1>
+        <h1>Peggle-Inspired Game</h1>
         <button onclick="startGame()">Start Game</button>
         <button onclick="showSave()">Load Save Code</button>
         <button onclick="showInstructions()">Instructions</button>
@@ -142,18 +142,18 @@
             ctx.rotate(cannon.angle);
             ctx.fillStyle = "blue";
             ctx.fillRect(-10, -40, 20, 40);
+            ctx.restore();
 
             // Draw trajectory dots
             for (let i = 1; i <= 10; i++) {
-                const x = i * 30 * Math.cos(cannon.angle);
-                const y = i * 30 * Math.sin(cannon.angle);
+                const x = cannon.x + i * 30 * Math.cos(cannon.angle);
+                const y = cannon.y + i * 30 * Math.sin(cannon.angle);
                 ctx.beginPath();
-                ctx.arc(cannon.x + x, cannon.y + y, 3, 0, Math.PI * 2);
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
                 ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
                 ctx.fill();
                 ctx.closePath();
             }
-            ctx.restore();
         }
 
         function aimCannon(event) {
