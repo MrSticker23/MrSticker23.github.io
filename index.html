@@ -46,13 +46,6 @@
             text-align: center;
             margin-top: 20px;
         }
-        canvas {
-            border: 2px solid black;
-            margin-top: 20px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
     </style>
 </head>
 <body>
@@ -62,7 +55,7 @@
     <h2 style="text-align:center">Enter Password</h2>
     <div style="text-align:center">
         <input type="password" id="password-input" placeholder="Password">
-        <button id="enter-button">Enter</button>
+        <button onclick="checkPassword()">Enter</button>
     </div>
 </div>
 
@@ -83,7 +76,6 @@
         <a href="#" onclick="showTab('home')">Home</a>
         <a href="#" onclick="showTab('shop')">Shop</a>
         <a href="#" onclick="showTab('redeem')">Redeem Code</a>
-        <a href="#" onclick="showTab('peggle')">Peggle Game</a>
     </nav>
 
     <div id="home" class="tab active">
@@ -103,13 +95,6 @@
         <p id="redeem-message"></p>
     </div>
 
-    <div id="peggle" class="tab">
-        <h1>Peggle-Inspired Game</h1>
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <button onclick="startGame()">Start Game</button>
-        <p id="game-message"></p>
-    </div>
-
     <div id="admin" class="tab">
         <h1>Admin Controls</h1>
         <div class="admin-controls">
@@ -123,22 +108,17 @@
 </div>
 
 <script>
-    // Initialize lockdown state from localStorage
-    let lockdown = localStorage.getItem('lockdown') === '1' ? 1 : 0;
+    let lockdown = 0; // 0 = Not in lockdown, 1 = In lockdown
 
     // Check if website is in lockdown
     function checkLockdown() {
         if (lockdown === 1) {
             document.getElementById('password-gate').style.display = 'none';
             document.getElementById('lockdown-message').style.display = 'block';
-        } else {
-            document.getElementById('password-gate').style.display = 'block';
         }
     }
 
     // Check password
-    document.getElementById('enter-button').addEventListener('click', checkPassword);
-
     function checkPassword() {
         const password = document.getElementById('password-input').value;
         const userPassword = 'secure123'; // Regular user password
@@ -180,13 +160,11 @@
     function toggleLockdown() {
         const lockdownToggle = document.getElementById('lockdown-toggle').value;
         lockdown = parseInt(lockdownToggle);
-        localStorage.setItem('lockdown', lockdown);
         if (lockdown === 1) {
             alert('Website is now in lockdown mode.');
-            checkLockdown();
+            location.reload(); // Reload to apply lockdown
         } else {
             alert('Lockdown mode is now off.');
-            location.reload();
         }
     }
 
@@ -197,9 +175,8 @@
 
         if (reactivationCode === correctReactivationCode) {
             lockdown = 0;
-            localStorage.setItem('lockdown', lockdown);
             alert('Website reactivated!');
-            location.reload();
+            location.reload(); // Reload to disable lockdown
         } else {
             document.getElementById('reactivation-message').textContent = 'Invalid reactivation code. Please try again.';
         }
@@ -207,60 +184,6 @@
 
     // Initialize
     window.onload = checkLockdown;
-
-    // Peggle Game Script
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    let ball = { x: 400, y: 300, dx: 2, dy: -2, radius: 10 };
-    let pegs = Array.from({ length: 10 }, () => ({
-        x: Math.random() * 750 + 25,
-        y: Math.random() * 550 + 25,
-        radius: 15
-    }));
-
-    function drawBall() {
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'blue';
-        ctx.fill();
-        ctx.closePath();
-    }
-
-    function drawPegs() {
-        pegs.forEach(peg => {
-            ctx.beginPath();
-            ctx.arc(peg.x, peg.y, peg.radius, 0, Math.PI * 2);
-            ctx.fillStyle = 'red';
-            ctx.fill();
-            ctx.closePath();
-        });
-    }
-
-    function updateGame() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawBall();
-        drawPegs();
-
-        ball.x += ball.dx;
-        ball.y += ball.dy;
-
-        if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx
-            ball.dx = -ball.dx;
-        }
-
-        if (ball.y + ball.dy > canvas.height - ball.radius || ball.y + ball.dy < ball.radius) {
-            ball.dy = -ball.dy;
-        }
-
-        requestAnimationFrame(updateGame);
-    }
-
-    function startGame() {
-        ball.x = 400;
-        ball.y = 300;
-        updateGame();
-    }
 </script>
 
 </body>
