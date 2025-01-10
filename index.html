@@ -123,13 +123,16 @@
 </div>
 
 <script>
-    let lockdown = 0; // 0 = Not in lockdown, 1 = In lockdown
+    // Initialize lockdown state from localStorage
+    let lockdown = localStorage.getItem('lockdown') === '1' ? 1 : 0;
 
     // Check if website is in lockdown
     function checkLockdown() {
         if (lockdown === 1) {
             document.getElementById('password-gate').style.display = 'none';
             document.getElementById('lockdown-message').style.display = 'block';
+        } else {
+            document.getElementById('password-gate').style.display = 'block';
         }
     }
 
@@ -175,11 +178,13 @@
     function toggleLockdown() {
         const lockdownToggle = document.getElementById('lockdown-toggle').value;
         lockdown = parseInt(lockdownToggle);
+        localStorage.setItem('lockdown', lockdown);
         if (lockdown === 1) {
             alert('Website is now in lockdown mode.');
-            location.reload(); // Reload to apply lockdown
+            checkLockdown();
         } else {
             alert('Lockdown mode is now off.');
+            location.reload();
         }
     }
 
@@ -190,8 +195,9 @@
 
         if (reactivationCode === correctReactivationCode) {
             lockdown = 0;
+            localStorage.setItem('lockdown', lockdown);
             alert('Website reactivated!');
-            location.reload(); // Reload to disable lockdown
+            location.reload();
         } else {
             document.getElementById('reactivation-message').textContent = 'Invalid reactivation code. Please try again.';
         }
@@ -237,7 +243,7 @@
         ball.x += ball.dx;
         ball.y += ball.dy;
 
-        if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
+        if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx
             ball.dx = -ball.dx;
         }
 
