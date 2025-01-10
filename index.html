@@ -62,7 +62,7 @@
     <h2 style="text-align:center">Enter Password</h2>
     <div style="text-align:center">
         <input type="password" id="password-input" placeholder="Password">
-        <button onclick="checkPassword()">Enter</button>
+        <button id="enter-button">Enter</button>
     </div>
 </div>
 
@@ -137,6 +137,8 @@
     }
 
     // Check password
+    document.getElementById('enter-button').addEventListener('click', checkPassword);
+
     function checkPassword() {
         const password = document.getElementById('password-input').value;
         const userPassword = 'secure123'; // Regular user password
