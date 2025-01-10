@@ -76,6 +76,7 @@
         <a href="#" onclick="showTab('home')">Home</a>
         <a href="#" onclick="showTab('shop')">Shop</a>
         <a href="#" onclick="showTab('redeem')">Redeem Code</a>
+        <a href="#" onclick="showTab('admin')">Admin</a>
     </nav>
 
     <div id="home" class="tab active">
@@ -104,15 +105,25 @@
                 <option value="1">On</option>
             </select>
         </div>
+        <div class="admin-controls">
+            <h3>Add Redeem Codes</h3>
+            <input type="text" id="new-code" placeholder="Code (e.g., skib)">
+            <input type="text" id="new-link" placeholder="Link (e.g., https://555.com)">
+            <button onclick="addRedeemCode()">Add Code</button>
+            <p id="admin-message"></p>
+        </div>
+        <div class="admin-controls">
+            <h3>Existing Codes</h3>
+            <ul id="code-list"></ul>
+        </div>
     </div>
 </div>
 
 <script>
-    let lockdown = 1; // 0 = Not in lockdown, 1 = In lockdown
-
     // Check if website is in lockdown
     function checkLockdown() {
-        if (lockdown === 1) {
+        const lockdown = localStorage.getItem('lockdown') || '0';
+        if (lockdown === '1') {
             document.getElementById('password-gate').style.display = 'none';
             document.getElementById('lockdown-message').style.display = 'block';
         }
@@ -128,6 +139,7 @@
             document.getElementById('password-gate').style.display = 'none';
             document.getElementById('main-container').style.display = 'block';
             showTab('admin'); // Show admin controls
+            loadCodes(); // Load existing codes
         } else if (password === userPassword) {
             document.getElementById('password-gate').style.display = 'none';
             document.getElementById('main-container').style.display = 'block';
@@ -146,25 +158,54 @@
     // Redeem code function
     function redeemCode() {
         const code = document.getElementById('code-input').value;
-        const correctCode = 'redeem123'; // Replace with your code
-        const link = 'https://example.com'; // Replace with your link
+        const codes = JSON.parse(localStorage.getItem('codes') || '{}');
 
-        if (code === correctCode) {
-            document.getElementById('redeem-message').innerHTML = `Code redeemed! <a href="${link}" target="_blank">Click here</a>`;
+        if (codes[code]) {
+            document.getElementById('redeem-message').innerHTML = `Code redeemed! <a href="${codes[code]}" target="_blank">Click here</a>`;
         } else {
             document.getElementById('redeem-message').textContent = 'Invalid code. Please try again.';
+        }
+    }
+
+    // Add a new redeem code
+    function addRedeemCode() {
+        const code = document.getElementById('new-code').value.trim();
+        const link = document.getElementById('new-link').value.trim();
+        const codes = JSON.parse(localStorage.getItem('codes') || '{}');
+
+        if (code && link) {
+            codes[code] = link;
+            localStorage.setItem('codes', JSON.stringify(codes));
+            document.getElementById('admin-message').textContent = 'Code added successfully!';
+            loadCodes(); // Refresh the code list
+        } else {
+            document.getElementById('admin-message').textContent = 'Please enter both a code and a link.';
+        }
+    }
+
+    // Load existing codes into the admin panel
+    function loadCodes() {
+        const codes = JSON.parse(localStorage.getItem('codes') || '{}');
+        const codeList = document.getElementById('code-list');
+        codeList.innerHTML = '';
+
+        for (const [code, link] of Object.entries(codes)) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${code}: ${link}`;
+            codeList.appendChild(listItem);
         }
     }
 
     // Toggle lockdown mode
     function toggleLockdown() {
         const lockdownToggle = document.getElementById('lockdown-toggle').value;
-        lockdown = parseInt(lockdownToggle);
-        if (lockdown === 1) {
+        localStorage.setItem('lockdown', lockdownToggle);
+        if (lockdownToggle === '1') {
             alert('Website is now in lockdown mode.');
             location.reload(); // Reload to apply lockdown
         } else {
             alert('Lockdown mode is now off.');
+            location.reload(); // Reload to disable lockdown
         }
     }
 
@@ -174,7 +215,7 @@
         const correctReactivationCode = 'reactivate123'; // Replace with your reactivation code
 
         if (reactivationCode === correctReactivationCode) {
-            lockdown = 0;
+            localStorage.setItem('lockdown', '0');
             alert('Website reactivated!');
             location.reload(); // Reload to disable lockdown
         } else {
@@ -188,5 +229,3 @@
 
 </body>
 </html>
-
-
