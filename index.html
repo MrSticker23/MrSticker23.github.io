@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Website</title>
+    <title>Shared Lockdown</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -107,22 +107,33 @@
         </div>
         <div class="admin-controls">
             <h3>Add Redeem Codes</h3>
-            <input type="text" id="new-code" placeholder="Code (e.g., skib)">
-            <input type="text" id="new-link" placeholder="Link (e.g., https://555.com)">
+            <input type="text" id="new-code" placeholder="Code">
+            <input type="text" id="new-link" placeholder="Link">
             <button onclick="addRedeemCode()">Add Code</button>
             <p id="admin-message"></p>
-        </div>
-        <div class="admin-controls">
-            <h3>Existing Codes</h3>
-            <ul id="code-list"></ul>
         </div>
     </div>
 </div>
 
 <script>
+    // Helper function to manage cookies
+    function setCookie(name, value, days) {
+        const expires = new Date(Date.now() + days * 864e5).toUTCString();
+        document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+    }
+
+    function getCookie(name) {
+        const cookies = document.cookie.split('; ').reduce((acc, cookie) => {
+            const [key, val] = cookie.split('=');
+            acc[key] = val;
+            return acc;
+        }, {});
+        return cookies[name] || '';
+    }
+
     // Check if website is in lockdown
     function checkLockdown() {
-        const lockdown = localStorage.getItem('lockdown') || '0';
+        const lockdown = getCookie('lockdown') || '0';
         if (lockdown === '1') {
             document.getElementById('password-gate').style.display = 'none';
             document.getElementById('lockdown-message').style.display = 'block';
@@ -132,14 +143,13 @@
     // Check password
     function checkPassword() {
         const password = document.getElementById('password-input').value;
-        const userPassword = 'secure123'; // Regular user password
-        const adminPassword = 'admin123'; // Admin password
+        const userPassword = 'secure123';
+        const adminPassword = 'admin123';
 
         if (password === adminPassword) {
             document.getElementById('password-gate').style.display = 'none';
             document.getElementById('main-container').style.display = 'block';
-            showTab('admin'); // Show admin controls
-            loadCodes(); // Load existing codes
+            showTab('admin');
         } else if (password === userPassword) {
             document.getElementById('password-gate').style.display = 'none';
             document.getElementById('main-container').style.display = 'block';
@@ -155,71 +165,29 @@
         document.getElementById(tabId).classList.add('active');
     }
 
-    // Redeem code function
-    function redeemCode() {
-        const code = document.getElementById('code-input').value;
-        const codes = JSON.parse(localStorage.getItem('codes') || '{}');
-
-        if (codes[code]) {
-            document.getElementById('redeem-message').innerHTML = `Code redeemed! <a href="${codes[code]}" target="_blank">Click here</a>`;
-        } else {
-            document.getElementById('redeem-message').textContent = 'Invalid code. Please try again.';
-        }
-    }
-
-    // Add a new redeem code
-    function addRedeemCode() {
-        const code = document.getElementById('new-code').value.trim();
-        const link = document.getElementById('new-link').value.trim();
-        const codes = JSON.parse(localStorage.getItem('codes') || '{}');
-
-        if (code && link) {
-            codes[code] = link;
-            localStorage.setItem('codes', JSON.stringify(codes));
-            document.getElementById('admin-message').textContent = 'Code added successfully!';
-            loadCodes(); // Refresh the code list
-        } else {
-            document.getElementById('admin-message').textContent = 'Please enter both a code and a link.';
-        }
-    }
-
-    // Load existing codes into the admin panel
-    function loadCodes() {
-        const codes = JSON.parse(localStorage.getItem('codes') || '{}');
-        const codeList = document.getElementById('code-list');
-        codeList.innerHTML = '';
-
-        for (const [code, link] of Object.entries(codes)) {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${code}: ${link}`;
-            codeList.appendChild(listItem);
-        }
-    }
-
     // Toggle lockdown mode
     function toggleLockdown() {
         const lockdownToggle = document.getElementById('lockdown-toggle').value;
-        localStorage.setItem('lockdown', lockdownToggle);
+        setCookie('lockdown', lockdownToggle, 7); // Lockdown state stored in cookie
         if (lockdownToggle === '1') {
             alert('Website is now in lockdown mode.');
-            location.reload(); // Reload to apply lockdown
+            location.reload();
         } else {
             alert('Lockdown mode is now off.');
-            location.reload(); // Reload to disable lockdown
+            location.reload();
         }
     }
 
     // Reactivate site function
     function reactivateSite() {
         const reactivationCode = document.getElementById('reactivation-code').value;
-        const correctReactivationCode = 'reactivate123'; // Replace with your reactivation code
-
+        const correctReactivationCode = 'reactivate123';
         if (reactivationCode === correctReactivationCode) {
-            localStorage.setItem('lockdown', '0');
+            setCookie('lockdown', '0', 7);
             alert('Website reactivated!');
-            location.reload(); // Reload to disable lockdown
+            location.reload();
         } else {
-            document.getElementById('reactivation-message').textContent = 'Invalid reactivation code. Please try again.';
+            document.getElementById('reactivation-message').textContent = 'Invalid reactivation code.';
         }
     }
 
